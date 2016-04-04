@@ -2,9 +2,11 @@ package com.satreci.shlee.perfomanceTest;
 
 import com.amd.aparapi.Kernel;
 import com.opencsv.CSVWriter;
+import com.satreci.shlee.binary.BinaryCal;
 import org.junit.Test;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -106,5 +108,15 @@ public class PerfomanceTest {
 		com.satreci.shlee.perfomanceSEQ.Complexity2 complexitySEQ = new com.satreci.shlee.perfomanceSEQ.Complexity2();
 		complexitySEQ.run(1, band1, band2, band3, result);
 		assertEquals(expected, result[0], 1e-7);
+	}
+	@Test
+	public void testBinary() throws IOException {
+		BinaryCal br = new BinaryCal();
+//        float[] result = br.read("/home/shlee/workspace/sparksample1/SampleImageFileGenerator/C1.img");
+//
+//        for(int i = 0; i < result.length; i++){
+//            System.out.println(i + "," + result[i]);
+//        }
+
 	}
 }
