@@ -59,7 +59,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.satreci.palico.spark.WordCounter</mainClass>
+                            <mainClass>org.ground.palico.spark.WordCounter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
