@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Spark/ExtPerfTimeApp2/ExtPerfTimeApp2.iml" filepath="$PROJECT_DIR$/Spark/ExtPerfTimeApp2/ExtPerfTimeApp2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SampleImageFileGenerator/SampleImageFileGenerator.iml" filepath="$PROJECT_DIR$/SampleImageFileGenerator/SampleImageFileGenerator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HadoopMR/Wordcount_HadoopMR/Wordcount_HadoopMR.iml" filepath="$PROJECT_DIR$/HadoopMR/Wordcount_HadoopMR/Wordcount_HadoopMR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ExtPerfTimeApp2.iml" filepath="$PROJECT_DIR$/ExtPerfTimeApp2.iml" />
     </modules>
   </component>
 </project>
