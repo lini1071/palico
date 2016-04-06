@@ -14,6 +14,7 @@ class MergeReducer extends
 		
 		for (FloatWritable value : values) {
 			context.write(key, value);
+		
 		}
 	}
 }
