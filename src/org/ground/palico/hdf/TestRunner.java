@@ -7,38 +7,30 @@ import org.junit.Test;
 import java.nio.ByteOrder;
 
 public class TestRunner {
-
-    public void testPerformByOpr(TestPlan testPlan) {
-        try {
-            long start = System.currentTimeMillis();
-            testPlan.perform();
-            long end = System.currentTimeMillis();
-            String mode = testPlan.getModeName();
-
-            double spendTime = (end - start) / 1000.0;
-            System.out.println(mode + " spend time : " + spendTime);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
-    public void testPerformance() {
+    public void testPerformance() throws Exception {
         BasicConfigurator.configure();
 //        testPerformByOpr(new TestPlan(Kernel.EXECUTION_MODE.GPU));
-        testPerformByOpr(new TestPlan(Kernel.EXECUTION_MODE.JTP));
+        TestPlan testPlan = new TestPlan(Kernel.EXECUTION_MODE.JTP);
+
+        long start = System.currentTimeMillis();
+        testPlan.perform("data/COMS_GOCI_L1B_GA_20160301001642.he5", "data/CHL.he5", "CHL dataset");
+        long end = System.currentTimeMillis();
+
+        double spendTime = (end - start) / 1000.0;
+        String mode = testPlan.getModeName();
+        System.out.println(mode + "mode spend time : " + spendTime);
     }
 
     @Test
     public void testCal() throws Exception {
         BasicConfigurator.configure();
-        HDFReader hdfReader = new HDFReader("/home/shlee/GOCI/20160301_GOCIdata/LV1B/COMS_GOCI_L1B_GA_20160301001642.he5");
-        int[] band3 = hdfReader.getDataset(3);
+        HDFReader hdfReader = new HDFReader("data/COMS_GOCI_L1B_GA_20160301001642.he5");
+        int[] band3 = hdfReader.getDataSet(3);
 
-        for(int i = 0; i< 1000; i++){
+        for (int i = 0; i < 1000; i++) {
 //            if(band3[i] > 0) {
-                System.out.println(i + ", " + band3[i]);
+            System.out.println(i + ", " + band3[i]);
 //            }
         }
     }
@@ -56,5 +48,11 @@ public class TestRunner {
         } else {
             System.out.println("Little-endian");
         }
+    }
+
+    @Test
+    public void testLog(){
+        System.out.println(Math.log(10));
+        System.out.println(Math.log((float)3/10)/Math.log(10));
     }
 }

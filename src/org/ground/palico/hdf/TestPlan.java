@@ -23,14 +23,15 @@ class TestPlan {
         return modeName;
     }
 
-    public void perform() throws Exception {
-        HDFReader hdfReader = new HDFReader("/home/shlee/GOCI/20160301_GOCIdata/LV1B/COMS_GOCI_L1B_GA_20160301001642.he5");
+    public void perform(String srcFile, String destFile, String dataSet) throws Exception {
+        HDFReader hdfReader = new HDFReader(srcFile);
 
-        int[] band3 = hdfReader.getDataset(3);
-        int[] band4 = hdfReader.getDataset(4);
+        int[] band3 = hdfReader.getDataSet(3);
+        int[] band4 = hdfReader.getDataSet(4);
 
         int size = hdfReader.getSize();
         double[] result = new double[size];
+
 
         for (int i = 0; i < result.length; i++) {
             result[i] = 0.0;
@@ -50,10 +51,10 @@ class TestPlan {
                 if (band3[gid] == 0.0 || band4[gid] == 0.0) {
                     result[gid] = 0.0f;
                 } else {
-                    double r1 = log((band3[gid] / band4[gid]));
+                    double r1 = log((double)band3[gid] / (double)band4[gid]) / log(10);
                     double r2 = r1 * r1;
                     double r3 = r2 * r1;
-                    result[gid] = (float)(c0 + pow(10., c1 + (c2 * r1) + (c3 * r3) + (c4 * r3)));
+                    result[gid] = c0 + pow(10, c1 + c2*r1 + c3*r2 + c4*r3);
                 }
             }
         };
@@ -64,10 +65,8 @@ class TestPlan {
         kernel.execute(range);
         kernel.dispose();
 
-
-        String fileName = "doc/CHL.he5";
-        String dataSetName = "CHL dataset";
-        HDFCreator hdfCreator = new HDFCreator(fileName, dataSetName, result);
-        hdfCreator.HDFCreate();
+        HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
+        hdfCreator.create();
     }
+
 }

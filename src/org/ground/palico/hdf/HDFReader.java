@@ -11,8 +11,8 @@ public class HDFReader {
         this.filePath = filePath;
     }
 
-    public int[] getDataset(int bandNum) throws Exception {
-        final int fid = H5.H5Fopen(filePath, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_FILE_ACCESS_DEFAULT);
+    public int[] getDataSet(int bandNum) throws Exception {
+        final int fid = H5.H5Fopen(filePath, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_FILE_ACCESS_DEFAULT);
         String name = String.format("/HDFEOS/GRIDS/Image Data/Data Fields/Band %d Image Pixel Values", bandNum);
 
         final int did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
