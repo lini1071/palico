@@ -1,11 +1,7 @@
 package org.ground.palico;
 
 import com.amd.aparapi.Kernel;
-import org.ground.palico.gpu.aparapi.AparapiBandOperator2;
-import org.ground.palico.base.SequentialBandOperator2;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestRunner {
     @Test

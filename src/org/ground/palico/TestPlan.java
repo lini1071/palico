@@ -38,25 +38,38 @@ class TestPlan {
         return name;
     }
 
-    public float[] perform() {
-        final float[] band1 = new float[bufferSize];
-        final float[] band2 = new float[bufferSize];
-        final float[] band3 = new float[bufferSize];
-        final float[] result = new float[bufferSize];
+    float[] band1;
+    float[] band2;
+    float[] band3;
+    float[] result;
+
+    public void initBand() {
+        band1 = new float[bufferSize];
+        band2 = new float[bufferSize];
+        band3 = new float[bufferSize];
+        result = new float[bufferSize];
 
         for (int i = 0; i < bufferSize; i++) {
             band1[i] = 3.2345F;
             band2[i] = 7.5678F;
             band3[i] = 2.8456F;
         }
+    }
 
+    Operations operationMode;
+    org.ground.palico.base.Operations operationSeq;
+
+    public void initOperation() {
+        operationMode = new Operations();
+        operationMode.initializeOperation();
+        operationSeq = new org.ground.palico.base.Operations();
+        operationSeq.initializeOperation();
+    }
+
+    public float[] run() {
         if (executionMode.equals(Kernel.EXECUTION_MODE.GPU) || executionMode.equals(Kernel.EXECUTION_MODE.JTP)) {
-            Operations operationMode = new Operations();
-            operationMode.initializeOperation();
             operationMode.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
         } else {
-            org.ground.palico.base.Operations operationSeq = new org.ground.palico.base.Operations();
-            operationSeq.initializeOperation();
             operationSeq.getOperation(complexity).run(bufferSize, band1, band2, band3, result);
         }
         return result;
@@ -65,16 +78,18 @@ class TestPlan {
     public static void perform(TestPlan plan) throws Exception {
         int mega = 1;
         int cnt = 1;
-        String fileName = "performance_result.csv";
+        String fileName = "data/performance_result.csv";
         CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
         while (mega < 65) {
             String[] data = new String[4];
             plan.setBufferSize(mega * 1024 * 1024);
+            plan.initBand();
 
-            for (int i = 9; i < 10; i++) {
+            for (int i = 0; i < 10; i++) {
+                plan.initOperation();
                 plan.setComplexity(i);
                 long start = System.currentTimeMillis();
-                plan.perform();
+                plan.run();
                 long end = System.currentTimeMillis();
 
                 data[0] = plan.getName();
@@ -110,8 +125,8 @@ class TestPlan {
                 testPlan.setBufferSize(bufferSize);
                 testPlan.setComplexity(i);
                 for (int j = 0; j < bufferSize; j++) {
-                    System.out.println(mega + ", " + i + ", " + j + ", " + testPlan.perform()[j]);
-                    assertEquals(expected.get(i), testPlan.perform()[j], 1e-4);
+                    System.out.println(mega + ", " + i + ", " + j + ", " + testPlan.run()[j]);
+                    assertEquals(expected.get(i), testPlan.run()[j], 1e-4);
                 }
             }
             mega += 20;
