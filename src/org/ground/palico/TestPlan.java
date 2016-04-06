@@ -2,6 +2,7 @@ package org.ground.palico;
 
 import com.amd.aparapi.Kernel;
 import com.opencsv.CSVWriter;
+import org.ground.palico.gpu.aparapi.Operations;
 
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ class TestPlan {
         return name;
     }
 
-    public void perform() {
+    public float[] perform() {
         final float[] band1 = new float[bufferSize];
         final float[] band2 = new float[bufferSize];
         final float[] band3 = new float[bufferSize];
@@ -58,6 +59,7 @@ class TestPlan {
             operationSeq.initializeOperation();
             operationSeq.getOperation(complexity).run(bufferSize, band1, band2, band3, result);
         }
+        return result;
     }
 
     public static void perform(TestPlan plan) throws Exception {
