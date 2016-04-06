@@ -47,7 +47,8 @@ class TestPlan {
         }
 
         if (executionMode.equals(Kernel.EXECUTION_MODE.GPU) || executionMode.equals(Kernel.EXECUTION_MODE.JTP)) {
-            Operations operationMode = new Operations();
+            org.ground.palico.gpu.aparapi.Operations
+            	operationMode = new org.ground.palico.gpu.aparapi.Operations();
             operationMode.initializeOperation();
             operationMode.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
         } else {

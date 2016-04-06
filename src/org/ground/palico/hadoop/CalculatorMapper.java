@@ -2,11 +2,12 @@ package org.ground.palico.hadoop;
 
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.map.WrappedMapper;
 
 import java.io.IOException;
 
-public class CalculatorMapper extends Mapper<LongWritable, FloatWritable, LongWritable, FloatWritable> {
+public class CalculatorMapper extends
+	WrappedMapper<LongWritable, FloatWritable, LongWritable, FloatWritable> {
     private static final float SAMPLE_VALUE = 2.3f;
     private FloatRecordReader reader = new FloatRecordReader();
 
@@ -14,10 +15,8 @@ public class CalculatorMapper extends Mapper<LongWritable, FloatWritable, LongWr
     private FloatWritable outValue = new FloatWritable();
 
     // map function implementing
-    @Override
     public void map(LongWritable key, FloatWritable value, Context context) throws IOException, InterruptedException {
-        float res;
-
+    	float res;
         // If mapper read each data value successfully,
         // record processed output data value.
         while (reader.nextKeyValue()) {

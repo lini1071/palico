@@ -59,7 +59,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.ground.palico.spark.WordCounter</mainClass>
+                            <mainClass>org.ground.palico.hadoop.ImageGeneratorForHadoop</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

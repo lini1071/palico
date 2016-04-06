@@ -12,20 +12,20 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 public class FloatRecordInputFormat extends FileInputFormat<LongWritable, FloatWritable> {
-    @Override
+	
     public RecordReader<LongWritable, FloatWritable>
-    createRecordReader(InputSplit split, TaskAttemptContext context) {
-        return new FloatRecordReader();
+    	createRecordReader(InputSplit split, TaskAttemptContext context) {
+    		return new FloatRecordReader();
     }
 
     // Minimum size of record is 4 (sizeof(float)).
     @Override
-    protected long getFormatMinSplitSize() {
+    public long getFormatMinSplitSize() {
         return ((long) Float.BYTES);
     }
 
     @Override
-    protected boolean isSplitable(JobContext context, Path file) {
+    public boolean isSplitable(JobContext context, Path file) {
         final CompressionCodec codec = new CompressionCodecFactory(context.getConfiguration()).getCodec(file);
         if (null == codec) return true;
         else return (codec instanceof org.apache.hadoop.io.compress.SplittableCompressionCodec);

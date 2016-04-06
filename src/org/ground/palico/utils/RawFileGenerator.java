@@ -21,13 +21,6 @@ public class RawFileGenerator {
             }
             tEnd = System.currentTimeMillis();
             System.out.println("Generated file " + args[0] + "\nElapsed time : " + (tEnd - tStart) + "ms");
-
-			/*
-			 * Remove comment character if you want to validate written data
-			 *  
-			ValidateFile(args[0], 3 < args.length ?
-				Float.parseFloat(args[3]) : Float.parseFloat(args[2]));
-			*/
         } catch (NumberFormatException e) {
             System.err.println("Caught NumberFormatException");
         } catch (IOException e) {

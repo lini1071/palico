@@ -16,21 +16,23 @@ import org.apache.hadoop.util.ReflectionUtils;
 import java.io.IOException;
 
 public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, FloatWritable> {
+
     @Override
     public RecordWriter<LongWritable, FloatWritable>
-    getRecordWriter(TaskAttemptContext job) throws IOException, InterruptedException {
-        Configuration conf = job.getConfiguration();
-        boolean isCompressed = getCompressOutput(job);
+    	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
+        Configuration conf = context.getConfiguration();
+        boolean isCompressed = getCompressOutput(context);
 
         CompressionCodec codec = null;
         String extension = "";
 
         if (isCompressed) {
-            Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(job, GzipCodec.class);
+            Class<? extends CompressionCodec> codecClass
+            	= getOutputCompressorClass(context, GzipCodec.class);
             codec = ReflectionUtils.newInstance(codecClass, conf);
             extension = codec.getDefaultExtension();
         }
-        Path file = getDefaultWorkFile(job, extension);
+        Path file = getDefaultWorkFile(context, extension);
         FileSystem fs = file.getFileSystem(conf);
 
         if (!isCompressed) {
