@@ -11,7 +11,7 @@ public abstract class AparapiBandOperator {
      */
     public void run(int size, float[] band1, float[] band2, float[] band3, float[] result, Kernel.EXECUTION_MODE mode){
         Kernel kernel = getKernel(band1, band2, band3, result);
-        Device device = Device.best();
+        Device device = Device.firstGPU();
         Range range = device.createRange(size);
 
         kernel.setExecutionMode(mode);

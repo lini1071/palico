@@ -3,10 +3,9 @@ package org.ground.palico;
 import com.amd.aparapi.Kernel;
 import com.opencsv.CSVWriter;
 import org.ground.palico.base.SeqOperations;
-import org.ground.palico.gpu.aparapi.AparapiOpertions;
+import org.ground.palico.gpu.aparapi.AparapiBandOperations;
 
 import java.io.FileWriter;
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,7 +57,7 @@ class TestPlan {
 
     public float[] run() {
         if (executionMode.equals(Kernel.EXECUTION_MODE.GPU) || executionMode.equals(Kernel.EXECUTION_MODE.JTP)) {
-            AparapiOpertions.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
+            AparapiBandOperations.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
         } else {
             SeqOperations.getOperation(complexity).run(bufferSize, band1, band2, band3, result);
         }
@@ -66,20 +65,20 @@ class TestPlan {
     }
 
     public static void perform(TestPlan plan) throws Exception {
-        int mega = 1;
+        int pixelNum = 1024 / 4 / 4;
         int cnt = 1;
-        String fileName = "data/performance_result.csv";
+        String fileName = "data/benchmark_result.csv";
         CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
-        while (mega < 65) {
+        while (pixelNum < (1024/4/4)+10) {
             String[] data = new String[4];
-            plan.setBufferSize(mega * 1024 * 1024);
+            plan.setBufferSize(pixelNum * 1024 * 1024);
             plan.initBand();
 
             for (int i = 0; i < 10; i++) {
-                perform(plan, mega, cnt, writer, data, i);
+                perform(plan, pixelNum, cnt, writer, data, i);
                 cnt++;
             }
-            mega += 7;
+            pixelNum += 1;
         }
         writer.close();
     }
@@ -98,28 +97,29 @@ class TestPlan {
         System.out.printf("No.%d %s [mega : %d] [복잡도 : %d] 실행 시간: %f\n", cnt, plan.getName(), mega, i, (end - start) / 1000.0);
     }
 
-    public static void testCal(TestPlan testPlan) {
-        HashMap<Integer, Float> expected = new HashMap<>();
-        expected.put(0, 3.2345f);
-        expected.put(1, 0.002156319f);
-        expected.put(2, 4.4443857E-7f);
-        expected.put(3, 9.160317E-11f);
-        expected.put(4, 1.8880315E-14f);
-        expected.put(5, 3.8914187E-18f);
-        expected.put(6, 8.0205975E-22f);
-        expected.put(7, 1.6531241E-25f);
-        expected.put(8, 3.4072514E-29f);
-        expected.put(9, 7.02268E-33f);
+    public static void testCal(TestPlan Plan) {
+        float expected[] = {
+                3.2345f,
+                0.002156319f,
+                4.4443857E-7f,
+                9.160317E-11f,
+                1.8880315E-14f,
+                3.8914187E-18f,
+                8.0205975E-22f,
+                1.6531241E-25f,
+                3.4072514E-29f,
+                7.02268E-33f
+        };
 
         int mega = 1;
         while (mega < 65) {
             int bufferSize = mega * 1 * 1;
             for (int i = 0; i < 10; i++) {
-                testPlan.setBufferSize(bufferSize);
-                testPlan.setComplexity(i);
+                Plan.setBufferSize(bufferSize);
+                Plan.setComplexity(i);
                 for (int j = 0; j < bufferSize; j++) {
-                    System.out.println(mega + ", " + i + ", " + j + ", " + testPlan.run()[j]);
-                    assertEquals(expected.get(i), testPlan.run()[j], 1e-4);
+                    System.out.println(mega + ", " + i + ", " + j + ", " + Plan.run()[j]);
+                    assertEquals(expected[i], Plan.run()[j], 1e-4);
                 }
             }
             mega += 20;

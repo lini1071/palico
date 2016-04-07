@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class TestRunner {
     @Test
-    public void testGPU() throws Exception{
+    public void testGPU() throws Exception {
         TestPlan.perform(new TestPlan(Kernel.EXECUTION_MODE.GPU));
     }
 
@@ -27,7 +27,7 @@ public class TestRunner {
     }
 
     @Test
-    public void testCal(){
+    public void testCal() {
         TestPlan.testCal(new TestPlan(Kernel.EXECUTION_MODE.GPU));
         TestPlan.testCal(new TestPlan(Kernel.EXECUTION_MODE.JTP));
         TestPlan.testCal(new TestPlan(Kernel.EXECUTION_MODE.SEQ));
