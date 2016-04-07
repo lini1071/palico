@@ -4,17 +4,16 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.MRJobConfig;
 
 public class ImageGeneratorForHadoop {
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
-		conf.set("mapreduce.output.basename", "result");
 		Job job = Job.getInstance(conf, "File Read & Calculation");
 		
 		// Set input & output path
-		job.setJarByClass(MergeReducer.class);
+		job.setJarByClass(ImageGeneratorForHadoop.class);
 		job.setMapperClass(CalculatorMapper.class);
 		job.setReducerClass(MergeReducer.class);
 		
@@ -26,7 +25,7 @@ public class ImageGeneratorForHadoop {
 		
 		job.setMapOutputKeyClass(LongWritable.class);
 		job.setMapOutputValueClass(FloatWritable.class);
-		job.setOutputKeyClass(LongWritable.class);
+		job.setOutputKeyClass(NullWritable.class);
 		job.setOutputValueClass(FloatWritable.class);
 		
 		// Pin start time. Submit the job and wait for completion

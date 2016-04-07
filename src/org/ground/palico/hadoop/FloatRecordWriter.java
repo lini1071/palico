@@ -3,23 +3,28 @@ package org.ground.palico.hadoop;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import java.io.IOException;
 
-public class FloatRecordWriter extends RecordWriter<LongWritable, FloatWritable> {
+public class FloatRecordWriter extends RecordWriter<NullWritable, FloatWritable> {
+	
+	// It may be a network stream. So we can't use seek.
 	private FSDataOutputStream oStream;
 	
 	public FloatRecordWriter(FSDataOutputStream stream) {
 		oStream = stream;
 	}
 	
-	public void write(LongWritable key, FloatWritable value) throws IOException, InterruptedException {
+	@Override
+	public synchronized void write(NullWritable key, FloatWritable value) throws IOException, InterruptedException {
 		oStream.writeFloat(value.get());
 	}
 	
-	public void close(TaskAttemptContext context) throws IOException, InterruptedException {
+	@Override
+	public synchronized void close(TaskAttemptContext context) throws IOException, InterruptedException {
 		oStream.close();
 	}
 }

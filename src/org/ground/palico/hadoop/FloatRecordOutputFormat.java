@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.GzipCodec;
 import org.apache.hadoop.mapreduce.RecordWriter;
@@ -15,10 +16,10 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.IOException;
 
-public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, FloatWritable> {
+public class FloatRecordOutputFormat extends FileOutputFormat<NullWritable, FloatWritable> {
 
     @Override
-    public RecordWriter<LongWritable, FloatWritable>
+    public RecordWriter<NullWritable, FloatWritable>
     	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
         boolean isCompressed = getCompressOutput(context);

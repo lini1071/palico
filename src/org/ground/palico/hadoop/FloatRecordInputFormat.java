@@ -1,5 +1,7 @@
 package org.ground.palico.hadoop;
 
+import java.io.IOException;
+
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -13,9 +15,14 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 public class FloatRecordInputFormat extends FileInputFormat<LongWritable, FloatWritable> {
 	
+    @Override
     public RecordReader<LongWritable, FloatWritable>
-    	createRecordReader(InputSplit split, TaskAttemptContext context) {
-    		return new FloatRecordReader();
+    	createRecordReader(InputSplit split, TaskAttemptContext context)
+    		throws IOException, InterruptedException {
+    	
+    	// the parameters(split, context) are passed one more at
+    	// input.initialize() in MapTask.runNewMapper()
+    	return new FloatRecordReader();
     }
 
     // Minimum size of record is 4 (sizeof(float)).

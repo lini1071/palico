@@ -10,21 +10,20 @@ import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.lib.input.FixedLengthRecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 
 public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable> {
+	
     // File pointer position
     private long fpStart;
     private long fpPos;
     private long fpEnd;
     private InputSplit split;
     private TaskAttemptContext context;
-
+    
     protected LongWritable key = new LongWritable();
     protected FloatWritable value = new FloatWritable();
     private FSDataInputStream iStream;
@@ -33,6 +32,7 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
 
     }
 
+    @Override
     public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
         this.split = split;
         this.context = context;
@@ -40,7 +40,6 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
         FileSplit fSplit = (FileSplit) split;
         Configuration job = context.getConfiguration();
         
-        System.out.println("FloatRecordReader initializing");
         // Split "S" is responsible for all records
         // starting from "start" and "end" positions
         fpStart = fSplit.getStart();
@@ -56,7 +55,8 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
         if (0 < fpStart) iStream.seek(fpStart);
     }
 
-    public boolean nextKeyValue() throws IOException, InterruptedException {
+    @Override
+    public synchronized boolean nextKeyValue() throws IOException, InterruptedException {
 		
         if (fpPos < fpEnd) {
             key.set(fpPos);
@@ -66,15 +66,18 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
         } else return false;
     }
 
+    @Override
     public LongWritable getCurrentKey() throws IOException, InterruptedException {
         return key;
     }
-
+    
+    @Override
     public FloatWritable getCurrentValue() throws IOException, InterruptedException {
         return value;
     }
 
-    public float getProgress() {
+    @Override
+    public float getProgress() throws IOException, InterruptedException {
         // t : total data size, c : currently progressed size
         float t = (float) (fpEnd - fpStart);
         float c = (float) (fpPos - fpStart);
@@ -83,6 +86,12 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
         return (t != 0.0f ? (c / t) : 0.0f);
     }
     
+    @Override
+    public synchronized void close() throws IOException {
+        iStream.close();
+    }
+    
+    /*
     public InputSplit getInputSplit() {
     	return split;
     }
@@ -90,8 +99,6 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
     public TaskAttemptContext getTaskAttemptContext() {
     	return context;
     }
+    */
 
-    public void close() throws IOException {
-        iStream.close();
-    }
 }
