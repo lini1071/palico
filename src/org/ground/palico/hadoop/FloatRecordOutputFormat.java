@@ -16,33 +16,16 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.IOException;
 
-public class FloatRecordOutputFormat extends FileOutputFormat<NullWritable, FloatWritable> {
+public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, FloatWritable> {
 
-    @Override
-    public RecordWriter<NullWritable, FloatWritable>
-    	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
-        Configuration conf = context.getConfiguration();
-        boolean isCompressed = getCompressOutput(context);
-
-        CompressionCodec codec = null;
-        String extension = "";
-
-        if (isCompressed) {
-            Class<? extends CompressionCodec> codecClass
-            	= getOutputCompressorClass(context, GzipCodec.class);
-            codec = ReflectionUtils.newInstance(codecClass, conf);
-            extension = codec.getDefaultExtension();
-        }
-        Path file = getDefaultWorkFile(context, extension);
-        FileSystem fs = file.getFileSystem(conf);
-
-        if (!isCompressed) {
-            FSDataOutputStream fileOut = fs.create(file, false);
-            return new FloatRecordWriter(fileOut);
-        } else {
-            FSDataOutputStream fileOut = fs.create(file, false);
-            return new FloatRecordWriter
-                    (new FSDataOutputStream(codec.createOutputStream(fileOut)));
-        }
-    }
+	@Override
+	public RecordWriter<LongWritable, FloatWritable>
+	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
+		Configuration conf = context.getConfiguration();
+		String extension = "";
+		Path file = getDefaultWorkFile(context, extension);
+		FileSystem fs = file.getFileSystem(conf);
+		FSDataOutputStream fileOut = fs.create(file, false);
+		return new FloatRecordWriter(fileOut);
+	}
 }

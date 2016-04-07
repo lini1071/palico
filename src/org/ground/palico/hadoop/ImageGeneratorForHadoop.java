@@ -15,7 +15,7 @@ public class ImageGeneratorForHadoop {
 		// Set input & output path
 		job.setJarByClass(ImageGeneratorForHadoop.class);
 		job.setMapperClass(CalculatorMapper.class);
-		job.setReducerClass(MergeReducer.class);
+//		job.setReducerClass(MergeReducer.class);
 		
 		job.setInputFormatClass(FloatRecordInputFormat.class);
 		job.setOutputFormatClass(FloatRecordOutputFormat.class);
@@ -25,8 +25,9 @@ public class ImageGeneratorForHadoop {
 		
 		job.setMapOutputKeyClass(LongWritable.class);
 		job.setMapOutputValueClass(FloatWritable.class);
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(FloatWritable.class);
+//		job.setOutputKeyClass(NullWritable.class);
+//		job.setOutputValueClass(FloatWritable.class);
+		job.setNumReduceTasks(0);
 		
 		// Pin start time. Submit the job and wait for completion
 		long tStart = System.nanoTime();
