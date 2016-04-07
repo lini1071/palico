@@ -10,12 +10,12 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 public class HDFCreator {
     String fileName;
     String dataSetName;
-    double[] dataSet;
+    float[] dataSet;
 
     private static final int DIM_X = 5685;
     private static final int DIM_Y = 5567;
 
-    public HDFCreator(String fileName, String dataSetName, double[] dataSet) {
+    public HDFCreator(String fileName, String dataSetName, float[] dataSet) {
         this.fileName = fileName;
         this.dataSetName = dataSetName;
         this.dataSet = dataSet;
@@ -40,11 +40,11 @@ public class HDFCreator {
 
         // Write the dataSet.
         if (dataSetId >= 0)
-            H5.H5Dwrite(dataSetId, HDF5Constants.H5T_NATIVE_DOUBLE, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+            H5.H5Dwrite(dataSetId, HDF5Constants.H5T_NATIVE_FLOAT, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                     HDF5Constants.H5P_DEFAULT, dataSet);
 
         /*if (dataSetId >= 0)
-            H5.H5Dread(dataSetId, HDF5Constants.H5T_NATIVE_DOUBLE, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+            H5.H5Dread(dataSetId, HDF5Constants.H5T_NATIVE_FLOAT, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                     HDF5Constants.H5P_DEFAULT, dataSet);
 */
         // Close the dataSet.
