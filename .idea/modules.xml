@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ExtPerfTimeApp2.iml" filepath="$PROJECT_DIR$/ExtPerfTimeApp2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/palico.iml" filepath="$PROJECT_DIR$/palico.iml" />
     </modules>
   </component>
 </project>

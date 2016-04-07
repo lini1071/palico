@@ -39,6 +39,27 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/aparapi.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>ncsa.hdf.hdf5lib</groupId>
+            <artifactId>H5</artifactId>
+            <version>2.10.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jarh5obj.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>ncsa.hdf.hdf5lib</groupId>
+            <artifactId>HDF5Constants</artifactId>
+            <version>2.10.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jarhdf-2.10.1.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>ncsa.hdf.hdf5lib</groupId>
+            <artifactId>exceptions.HDF5Exception</artifactId>
+            <version>2.10.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jarhdf5-2.10.1.jar</systemPath>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
