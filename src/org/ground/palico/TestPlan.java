@@ -2,6 +2,7 @@ package org.ground.palico;
 
 import com.amd.aparapi.Kernel;
 import com.opencsv.CSVWriter;
+import org.ground.palico.gpu.aparapi.Operations;
 
 import java.io.FileWriter;
 
@@ -47,9 +48,7 @@ class TestPlan {
         }
 
         if (executionMode.equals(Kernel.EXECUTION_MODE.GPU) || executionMode.equals(Kernel.EXECUTION_MODE.JTP)) {
-            Operations operationMode = new Operations();
-            operationMode.initializeOperation();
-            operationMode.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
+            Operations.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
         } else {
             org.ground.palico.base.Operations operationSeq = new org.ground.palico.base.Operations();
             operationSeq.initializeOperation();
