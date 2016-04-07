@@ -2,7 +2,8 @@ package org.ground.palico;
 
 import com.amd.aparapi.Kernel;
 import com.opencsv.CSVWriter;
-import org.ground.palico.gpu.aparapi.Operations;
+import org.ground.palico.base.SeqOperations;
+import org.ground.palico.gpu.aparapi.AparapiOpertions;
 
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -12,6 +13,10 @@ import static org.junit.Assert.assertEquals;
 class TestPlan {
     int bufferSize = 0;
     int complexity = 0;
+    float[] band1;
+    float[] band2;
+    float[] band3;
+    float[] result;
     String name;
     Kernel.EXECUTION_MODE executionMode;
 
@@ -38,11 +43,6 @@ class TestPlan {
         return name;
     }
 
-    float[] band1;
-    float[] band2;
-    float[] band3;
-    float[] result;
-
     public void initBand() {
         band1 = new float[bufferSize];
         band2 = new float[bufferSize];
@@ -56,21 +56,11 @@ class TestPlan {
         }
     }
 
-    Operations operationMode;
-    org.ground.palico.base.Operations operationSeq;
-
-    public void initOperation() {
-        operationMode = new Operations();
-        operationMode.initializeOperation();
-        operationSeq = new org.ground.palico.base.Operations();
-        operationSeq.initializeOperation();
-    }
-
     public float[] run() {
         if (executionMode.equals(Kernel.EXECUTION_MODE.GPU) || executionMode.equals(Kernel.EXECUTION_MODE.JTP)) {
-            operationMode.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
+            AparapiOpertions.getOperation(complexity).run(bufferSize, band1, band2, band3, result, executionMode);
         } else {
-            operationSeq.getOperation(complexity).run(bufferSize, band1, band2, band3, result);
+            SeqOperations.getOperation(complexity).run(bufferSize, band1, band2, band3, result);
         }
         return result;
     }
@@ -86,23 +76,26 @@ class TestPlan {
             plan.initBand();
 
             for (int i = 0; i < 10; i++) {
-                plan.initOperation();
-                plan.setComplexity(i);
-                long start = System.currentTimeMillis();
-                plan.run();
-                long end = System.currentTimeMillis();
-
-                data[0] = plan.getName();
-                data[1] = String.valueOf(mega + " mega");
-                data[2] = String.valueOf(i);
-                data[3] = String.valueOf((end - start) / 1000.0);
-                writer.writeNext(data);
-                System.out.printf("No.%d %s [mega : %d] [복잡도 : %d] 실행 시간: %f\n", cnt, plan.getName(), mega, i, (end - start) / 1000.0);
+                perform(plan, mega, cnt, writer, data, i);
                 cnt++;
             }
             mega += 7;
         }
         writer.close();
+    }
+
+    private static void perform(TestPlan plan, int mega, int cnt, CSVWriter writer, String[] data, int i) {
+        plan.setComplexity(i);
+        long start = System.currentTimeMillis();
+        plan.run();
+        long end = System.currentTimeMillis();
+
+        data[0] = plan.getName();
+        data[1] = String.valueOf(mega + " mega");
+        data[2] = String.valueOf(i);
+        data[3] = String.valueOf((end - start) / 1000.0);
+        writer.writeNext(data);
+        System.out.printf("No.%d %s [mega : %d] [복잡도 : %d] 실행 시간: %f\n", cnt, plan.getName(), mega, i, (end - start) / 1000.0);
     }
 
     public static void testCal(TestPlan testPlan) {
