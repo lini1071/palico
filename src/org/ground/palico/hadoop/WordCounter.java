@@ -2,13 +2,16 @@ package org.ground.palico.hadoop;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -19,15 +22,20 @@ public class WordCounter {
         Job job = Job.getInstance(conf, "word count");
 
         job.setJarByClass(WordCounter.class);
-        job.setMapperClass(TokenizerMapper.class);
-        job.setCombinerClass(IntSumReducer.class);
-        job.setReducerClass(IntSumReducer.class);
-        job.setOutputKeyClass(Text.class);
+
+        job.setOutputKeyClass(FloatWritable.class);
         job.setOutputValueClass(IntWritable.class);
+
+//        job.setInputFormatClass();
+        job.setMapperClass(TokenizerMapper.class);
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
         // Set input & output path
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        // reducer NONE
+        job.setNumReduceTasks(0);
 
         // Pin start time. Submit the job and wait for completion
         long tStart = System.nanoTime();
