@@ -1,5 +1,7 @@
 ## Apache Hadoop 샘플 코드 설명 ##
 
+### Contents ###
+
 1. 개요
 2. Mapper
 3. RecordReader
@@ -8,17 +10,15 @@
 6. FileOutputFormat
 7. Configuration & misc.
 
-#### 1. 개요
+#### 1. 개요 ####
 
 이 문서는 MapReduce 샘플 코드를 작성하면서 Apache Hadoop MapReduce 2.x 버전에서 Mapper의 구동을 위해 조사하고 작성했던 것들을 요약한 내용이다. 이 글은 내용들을 정리하고 기억하여 차후에 응용 수준을 높일 수 있게끔 하고자 하는 것을 주 목적으로 작성되었다. 한편으로는 MapReduce의 구성 요소의 관계에 대해 조금이나마 이해를 돕기 위한 보조 자료의 측면도 가질 수 있게끔 하려 했다.
-본 개요 부분 이후 Job Configuration과 기타를 제외하고 샘플 코드에서 구현한 사항은 클래스 각각에 대한 내용 을 설명하고 있다. 
+본 개요 부분 이후 Job Configuration과 기타를 제외하고 샘플 코드에서 구현한 사항은 클래스 각각에 대한 내용을 설명하고 있다. 데이터를 텍스트로 저장하고자 하는 경우는 대부분 Hadoop에서 미리 정의된 클래스들을 이용하여 처리가 가능하나, 이진 바이너리에 대한 처리를 사용자가 별도의 구성을 통해 구현하고자 하는 경우 Input/OutputFormat과 RecordReader/Writer 등을 정의해줄 필요가 있다. 본 문서에서는 수동으로 정의한 항목의 설명 대신 상위 클래스가 요구하는 기본 사항을 주로 기술하였다. 이번 샘플 코드에서는 Mapper만을 이용하므로 Reducer는 제외한다.
 
 
+#### 2. Mapper ####
 
-
-#### 2. Mapper
-
-사용자가 새로 정의하고자 하는 Mapper 또는 Reducer는 각각 org.apache.hadoop.mapreduce 안의 Mapper와 Reducer를 상속해야 한다. 이번 샘플 코드에서는 Mapper만을 이용하므로 Reducer는 제외한다. K1-V1으로 이루어진 데이터쌍을 *K2*-*V2*로 다시 매핑한다고 하면, 상속받는 새로운 Mapper class 자체와 내부 *map* 함수 정의를 아래의 예와 같이 하여야 한다.
+사용자가 새로 정의하고자 하는 Mapper 또는 Reducer는 각각 org.apache.hadoop.mapreduce 안의 Mapper와 Reducer를 상속해야 한다. K1-V1으로 이루어진 데이터쌍을 *K2*-*V2*로 다시 매핑한다고 하면, 상속받는 새로운 Mapper class 자체와 내부 *map* 함수 정의를 아래의 예와 같이 하여야 한다.
 
 ```java
 import org.apache.hadoop.mapreduce.Mapper;
@@ -33,14 +33,14 @@ class ChildMapper extends Mapper<K1, V1, K2, V2>
 }
 ```
 
-위의 코드는 map 함수가 K1 타입의 key를 K2 타입으로, V1 타입의 value를 V2 타입으로 변환한다는 내용을 담았다.
-context.write(key, value)를 호출하여 Map output 값을 다른 곳에 기록하게끔 하는데,
+위의 코드는 map 함수가 K1 타입의 key를 K2 타입으로, V1 타입의 value를 V2 타입으로 변환한다는 내용을 담았다. 
+위 함수는 실제로 Hadoop MapReduce client core의 Mapper 클래스 Mapper.java에 기재된 소스 코드에서
+사용되는 generic 식별자만 달리 취한 것이며 내용은 똑같다. 
+context.write(key, value)를 호출하여 Map output 값을 다른 곳에 기록하게끔 하는데, 
 샘플 코드에서는 실수 형태의 값을 갖게 될 value에 다른 값을 곱한 뒤 이를 기록하게 하였다.
-위에 나온 map 함수는 실제로 Hadoop MapReduce client core의 Mapper 클래스 Mapper.java에 기재된 소스 코드에서
-사용되는 generic 식별자만 달리 취한 것이며 내용은 똑같다.
 
 
-MapTask.runNewMapper에서 MapTask 내부에 정의된 MapOutputBuffer 객체를
+MapTask.runNewMapper에서 MapTask 내부에 정의된 MapOutputBuffer 객체를 
 NewOutputCollector로서 생성한 뒤 이를 위 map의 context로 넘겨주게 된다.
 위 map에서의 context.write는 MapOutputBuffer.collect를 호출하는 것과 같다.
 ```java
@@ -152,7 +152,7 @@ public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 ```
 
 
-#### 3. RecordReader
+#### 3. RecordReader ####
 
 새로 정의하는 RecordReader 역시 generic으로 *K2*, *V2*를 넘기는 RecordReader로서 정의해야 한다.
 위에서 나온 3개의 함수를 포함하여 RecordReader는 다음의 함수들을 구현하여야 한다.
@@ -203,7 +203,7 @@ createRecordReader를 호출하여 RecordReader 생성 시 넘겨주기도 하�
 local stream의 seek와 read를 수행하는 것처럼 FSDataInputStream으로 HDFS의 파일에 대해 내용을 읽어올 수 있다.
 
 	
-#### 4. InputFormat
+#### 4. InputFormat ####
 
 역시 기본 클래스 InputFormat을 상속하며, *K2*-*V2* generic으로 새로 작성한 InputFormat을 정의하여 준다.
 우리가 FileInputFormat을 상속받는다는 클래스를 만든다고 하면 아래의 메소드는 반드시 정의하여야 한다.
@@ -250,7 +250,7 @@ public long getFormatMinSplitSize()은 원본 파일에 대한 Split가 가져�
 public long getFormatMinSplitSize() { return DESIRED_SIZE; }
 ```
 
-#### 5. RecordWriter
+#### 5. RecordWriter ####
 
 사용자가 정의하는 RecordWriter는 보통 Mapper로 처리한 결과를 별도의 과정을 통해 최종 파일로 출력할 때 필요하다.
 이 클래스를 Mapper.map을 수행한 직후의 중간 결과값을 저장하기 위해 사용하는 것은 부적합하다.
@@ -311,15 +311,29 @@ Reducer가 없을 경우 NewDirectOutputCollector을 생성하는데, 다시 New
 ```
 
 
+Apache Hadoop fs 패키지에 정의된 FSDataOutputStream을 하나 선언한 뒤 파일 쓰기 작업을 수행할 수 있다. 
+작성하는 RecordWriter의 생성자를 통해 FSDataOutputStream을 전달받아 클래스 내부에 저장하고, 
+write에서 이 stream에 대한 쓰기 작업을 수행하는 방식 등을 취해 데이터를 기록할 수 있다. 아래 코드는 샘플 코드에 사용된
+실제 코드의 일부이다.
+
+
 ```java
-// package org.apache.hadoop.
+...
+import org.apache.hadoop.mapreduce.RecordWriter;
 
-Apache Hadoop fs 패키지에 정의된 FSDataOutputStream을 하나 선언한 뒤 파일 쓰기 작업을 수행할 수 있다.
-작성하는 RecordWriter의 생성자를 통해 FSDataOutputStream을 전달받아 클래스 내부에 저장하고,
-write에서 이 stream에 대한 쓰기 작업을 수행하는 방식 등을 취해 데이터를 기록할 수 있다.
+public class FloatRecordWriter extends RecordWriter<LongWritable, FixedLengthFloatArrayWritable> {
+	
+	private FSDataOutputStream oStream;
+	
+	public FloatRecordWriter(FSDataOutputStream stream) {
+		oStream = stream;
+	}
 
+	...
+}
+```
 
-#### 6. OutputFormat
+#### 6. OutputFormat ####
 
 기본 클래스 OutputFormat을 상속하며, *K3*-*V3* generic으로 새로 작성한 OutputFormat을 정의하여 준다.
 FileOutputFormat을 상속받는다는 클래스를 만든다고 하면 아래의 메소드를 반드시 정의해야 한다.
@@ -328,7 +342,7 @@ FileOutputFormat을 상속받는다는 클래스를 만든다고 하면 아래�
 public RecordWriter<K3, V3> getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException
 ```
 
-아래의 코드는 TextOutputFormat.java의 내용 중 일부를 참조해 작성되었으며 본 샘플에서 사용하였다.
+아래의 코드는 TextOutputFormat.java의 내용 중 일부를 참조해 작성되었으며 본 샘플에서 사용하였다. Path에 대한 적당한 FSDataOutputStream을 생성하고 이를 RecordWriter를 생성함과 동시에 인자로 넘기어 RecordWriter에서 차후 파일 쓰기 작업을 수행할 수 있게끔 하는 코드이다.
 
 ```java
 // referenced TextOutputFormat.java
@@ -346,10 +360,9 @@ public RecordWriter<K3, V3> getRecordWriter(TaskAttemptContext context) throws I
 	}
 ```
 
-Path에 대한 적당한 FSDataOutputStream을 생성하고 이를 RecordWriter를 생성함과 동시에 인자로 넘기어
-RecordWriter에서 파일 쓰기 작업을 수행할 수 있게끔 하는 코드이다.
 
-#### 7. Configuration & misc.
+
+#### 7. Configuration & misc. ####
 
 RunJar를 통해 실행될 클래스의 main 메소드는 Job을 submit하기 전에
 Job에 대한 Configuration 객체의 내용을 설정해주어야 한다.
