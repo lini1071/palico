@@ -283,6 +283,8 @@ public class TextInputFormat extends FileInputFormat<LongWritable, Text> {
 	}
 
 	...
+
+}
 ```
 
 
@@ -295,12 +297,11 @@ public long getFormatMinSplitSize() { return DESIRED_SIZE; }
 
 #### 5. RecordWriter ####
 
-사용자가 정의하는 RecordWriter는 보통 Mapper로 처리한 결과를 별도의 과정을 통해 최종 파일로 출력할 때 필요하다.
-이 클래스를 Mapper.map을 수행한 직후의 중간 결과값을 저장하기 위해 사용하는 것은 부적합하다.
-Mapper를 통해 나온 K2-V2 데이터가 Reducer를 통해 *K3*-*V3*의 형태로 변환된다고 보면 RecordWriter 클래스를 다음과 같이 정의한다.
+사용자가 정의하는 RecordWriter는 보통 Mapper로 처리한 결과를 Reducer를 거친 후 출력할 때 필요하다.
+Mapper를 통해 나온 K2-V2 데이터가 가상의 Reducer를 통해 *K3*-*V3*의 형태로 변환된다고 보면 RecordWriter 클래스를 다음과 같이 정의한다.
 
 ```java
-public class RecordWriter extends RecordWriter<K3, V3> { ... }
+public class CustomRecordWriter extends RecordWriter<K3, V3> { ... }
 ```
 
 RecordWriter를 정의하기 위해서는 아래의 두 메소드를 반드시 정의해주어야 한다.
