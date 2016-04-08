@@ -163,12 +163,57 @@ public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 * public V2 getCurrentValue() throws IOException, InterruptedException
 * public void close() throws IOException
 
-아래의 함수는 구현하여야 하나 작업의 진행도를 나타내는 것 외에는 실제로 중요한 기능을 하지는 않는다.
+다음 함수는 구현하여야 하나 작업의 진행도를 나타내는 것 외에는 실제로 중요한 기능을 하지는 않는다.
 
 * public float getProgress() throws IOException, InterruptedException
 
 
-Apache Hadoop fs 패키지에 정의된 FSDataInputStream을 하나 선언한 뒤 파일 읽기 작업을 수행할 수 있다.
+아래의 코드는 Hadoop에서 기본적으로 정의해둔, 텍스트 줄을 읽을 때 사용하는 LineRecordReader 클래스 내용 중 일부이다. 
+RecordReader는 아래와 같이 Apache Hadoop fs 패키지에 정의된 FSDataInputStream을 하나 선언한 뒤 파일 읽기 작업에 이용할 수 있다. 
+
+```java
+// package org.apache.hadoop.mapreduce.lib.input;
+// LineRecordReader.java
+...
+
+public class LineRecordReader extends RecordReader<LongWritable, Text> {
+
+	...
+
+	public static final String MAX_LINE_LENGTH = 
+		"mapreduce.input.linerecordreader.line.maxlength";
+	private long start;
+	private long pos;
+	private long end;
+
+	private SplitLineReader in;
+	private FSDataInputStream fileIn;
+
+	public LineRecordReader() {
+	}
+
+	public void initialize(InputSplit genericSplit,
+		TaskAttemptContext context) throws IOException {
+
+		FileSplit split = (FileSplit) genericSplit;
+		Configuration job = context.getConfiguration();
+		this.maxLineLength = job.getInt(MAX_LINE_LENGTH, Integer.MAX_VALUE);
+		start = split.getStart();
+		end = start + split.getLength();
+		final Path file = split.getPath();
+
+		// open the file and seek to the start of the split
+		final FileSystem fs = file.getFileSystem(job);
+		fileIn = fs.open(file);
+
+		...
+	}
+	
+	...
+
+}
+```
+
 MapTask.runNewMapper에서 map.run을 수행하기 전 이 RecordReader 객체의 initialize를 반드시 호출하므로
 initialize 메소드를 통해 InputSplit과 TaskAttemptContext 두 인자를 넘겨주는 것이 좋으며,
 InputFormat 클래스에서 K1-V1 데이터 쌍을 읽어오기 위해 위와 똑같은 두 인자를
@@ -196,8 +241,6 @@ createRecordReader를 호출하여 RecordReader 생성 시 넘겨주기도 하�
 	...
 	}
 ```
-
-
 
 전달받는 InputSplit로는 getStart로 원본 파일의 Split 위치, getLength로 Split 크기를 알 수 있으므로
 local stream의 seek와 read를 수행하는 것처럼 FSDataInputStream으로 HDFS의 파일에 대해 내용을 읽어올 수 있다.
