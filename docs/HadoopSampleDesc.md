@@ -173,11 +173,36 @@ MapTask.runNewMapper에서 map.run을 수행하기 전 이 RecordReader 객체�
 initialize 메소드를 통해 InputSplit과 TaskAttemptContext 두 인자를 넘겨주는 것이 좋으며,
 InputFormat 클래스에서 K1-V1 데이터 쌍을 읽어오기 위해 위와 똑같은 두 인자를
 createRecordReader를 호출하여 RecordReader 생성 시 넘겨주기도 하나 반드시 이 때에 전달하지 않아도 된다.
+```java
+// package org.apache.hadoop.mapred;
+// MapTask.java
+	@SuppressWarnings("unchecked")
+	private <INKEY,INVALUE,OUTKEY,OUTVALUE>
+	void runNewMapper(final JobConf job,
+			final TaskSplitIndex splitIndex,
+			final TaskUmbilicalProtocol umbilical,
+			TaskReporter reporter
+			) throws IOException, ClassNotFoundException,
+				InterruptedException {
+		......
+
+
+		try {
+			input.initialize(split, mapperContext);
+			mapper.run(mapperContext);
+
+			...
+		}
+	...
+	}
+```
+
+
 
 전달받는 InputSplit로는 getStart로 원본 파일의 Split 위치, getLength로 Split 크기를 알 수 있으므로
 local stream의 seek와 read를 수행하는 것처럼 FSDataInputStream으로 HDFS의 파일에 대해 내용을 읽어올 수 있다.
 
-
+	
 #### 4. InputFormat
 
 역시 기본 클래스 InputFormat을 상속하며, *K2*-*V2* generic으로 새로 작성한 InputFormat을 정의하여 준다.
@@ -194,9 +219,28 @@ public RecordReader<K2, V2> createRecordReader(InputSplit split, TaskAttemptCont
 }
 ```
 
-위와 같이 RecordReader 클래스 객체를 반환하게끔 작성할 수 있다.
+위는 단순히 RecordReader 클래스 객체를 반환하게끔 하는 코드이다. Hadoop에서 사용하는 TextInputFormat.java를 살펴보더라도
+createRecordReader는 다른 여러 코드에 비해 비교적 단순한 구조를 취하고 있음을 알 수 있다.
 
+```java
+// package org.apache.hadoop.mapreduce.lib.input;
+// TextInputFormat.java
+public class TextInputFormat extends FileInputFormat<LongWritable, Text> {
+	
+	@Override
+	public RecordReader<LongWritable, Text> 
+		createRecordReader(InputSplit split,
+				TaskAttemptContext context) {
+		String delimiter = context.getConfiguration().get(
+			"textinputformat.record.delimiter");
+		byte[] recordDelimiterBytes = null;
+		if (null != delimiter)
+			recordDelimiterBytes = delimiter.getBytes(Charsets.UTF_8);
+		return new LineRecordReader(recordDelimiterBytes);
+	}
 
+	...
+```
 
 
 public long getFormatMinSplitSize()은 원본 파일에 대한 Split가 가져야 할 최소 크기를 정의한다.
@@ -226,6 +270,50 @@ RecordWriter를 정의하기 위해서는 아래의 두 메소드를 반드시 �
 NewTrackingRecordWriter.real을 OutputFormat.getRecordWriter로 설정하여
 결과가 write 메소드를 통해 출력될 수 있도록 해준다.
 
+만일 프로젝트가 Reducer를 쓰지 않는다면, 즉 setNumReduceTasks(0)을 호출했다면 
+Mapper.map에서의 context가 OutputFormat에서 얻는 RecordWriter와 직접 연결되므로 
+Mapper에서의 출력을 RecordWriter로 바로 내보낼 수 있다.
+MapTask.runNewMapper에서 Reducer가 있을 경우 NewOutputCollector를 생성하는 반면 
+Reducer가 없을 경우 NewDirectOutputCollector을 생성하는데, 다시 NewOutputCollector는 
+내부에서 버퍼로 사용될 collector를 만들어 이를 Mapper에 이어주나 NewDirectOutputCollector는
+전달받은 OutputFormat에서 getRecordWriter를 호출하여 Writer를 반환받고 이를 출력으로 연결시킨다.
+```java
+// package org.apache.hadoop.mapred;
+// MapTask.java
+	@SuppressWarnings("unchecked")
+	private <INKEY,INVALUE,OUTKEY,OUTVALUE>
+		void runNewMapper(final JobConf job,
+			final TaskSplitIndex splitIndex,
+			final TaskUmbilicalProtocol umbilical,
+			TaskReporter reporter
+			) throws IOException, ClassNotFoundException,
+				InterruptedException {
+
+		...
+
+		org.apache.hadoop.mapreduce.RecordReader<INKEY,INVALUE> input =
+			new NewTrackingRecordReader<INKEY,INVALUE>
+			(split, inputFormat, reporter, taskContext);
+
+		job.setBoolean(JobContext.SKIP_RECORDS, isSkipping());
+		org.apache.hadoop.mapreduce.RecordWriter output = null;
+
+		// get an output object
+		if (job.getNumReduceTasks() == 0) {
+			output = 
+				new NewDirectOutputCollector(taskContext, job, umbilical, reporter);
+		} else {
+			output = new NewOutputCollector(taskContext, job, umbilical, reporter);
+		}
+
+		...
+	}
+```
+
+
+```java
+// package org.apache.hadoop.
+
 Apache Hadoop fs 패키지에 정의된 FSDataOutputStream을 하나 선언한 뒤 파일 쓰기 작업을 수행할 수 있다.
 작성하는 RecordWriter의 생성자를 통해 FSDataOutputStream을 전달받아 클래스 내부에 저장하고,
 write에서 이 stream에 대한 쓰기 작업을 수행하는 방식 등을 취해 데이터를 기록할 수 있다.
@@ -240,20 +328,22 @@ FileOutputFormat을 상속받는다는 클래스를 만든다고 하면 아래�
 public RecordWriter<K3, V3> getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException
 ```
 
-평이한 다음의 코드를 사용할 수도 있다.
+아래의 코드는 TextOutputFormat.java의 내용 중 일부를 참조해 작성되었으며 본 샘플에서 사용하였다.
 
 ```java
-@Override
-public RecordWriter<K3, V3>
-	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
+// referenced TextOutputFormat.java
+// 	: package org.apache.hadoop.mapreduce.output;
+	@Override
+	public RecordWriter<K3, V3>
+		getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
 
-	Configuration conf = context.getConfiguration();
-	String extension = "";
-	Path file = getDefaultWorkFile(context, extension);
-	FileSystem fs = file.getFileSystem(conf);
-	FSDataOutputStream fileOut = fs.create(file, false);
-	return new UserSpecifiedRecordWriter(fileOut);
-}
+		Configuration conf = context.getConfiguration();
+		String extension = "";
+		Path file = getDefaultWorkFile(context, extension);
+		FileSystem fs = file.getFileSystem(conf);
+		FSDataOutputStream fileOut = fs.create(file, false);
+		return new UserSpecifiedRecordWriter(fileOut);
+	}
 ```
 
 Path에 대한 적당한 FSDataOutputStream을 생성하고 이를 RecordWriter를 생성함과 동시에 인자로 넘기어
@@ -284,7 +374,7 @@ Job job = Job.getInstance(conf, __Job name in String__);
 
 * Job.setMapOutputKeyClass(*K2*.class)
 * Job.setMapOutputValueClass(*V2*.class)
-	최종 결과의 데이터 포맷 *K3*-*V3*과 중간 결과 포맷 K2-V2가 명확히 구별되어야 할 경우 호출될 수 있다.
+	Map 결과의 데이터 포맷을 설정한다.
 
 * Job.setOutputKeyClass(__K3(.class)__)
 * Job.setOutputValueClass(__V3(.class)__)
