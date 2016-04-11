@@ -67,7 +67,6 @@ class TestPlan {
     }
 
     public static void perform(TestPlan plan) throws Exception {
-        List<ArrayList<Float>> list = new ArrayList<>(new ArrayList<>());
         int pixelNum = 64;
         int cnt = 1;
         String fileName = "data/aparapi_benchmark_result.csv";
