@@ -6,6 +6,8 @@ import org.ground.palico.base.SeqOperations;
 import org.ground.palico.gpu.aparapi.AparapiBandOperations;
 
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -65,11 +67,12 @@ class TestPlan {
     }
 
     public static void perform(TestPlan plan) throws Exception {
-        int pixelNum = 1024 / 4 / 4;
+        List<ArrayList<Float>> list = new ArrayList<>(new ArrayList<>());
+        int pixelNum = 64;
         int cnt = 1;
-        String fileName = "data/benchmark_result.csv";
+        String fileName = "data/aparapi_benchmark_result.csv";
         CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
-        while (pixelNum < (1024/4/4)+10) {
+        while (pixelNum < (64) + 10) {
             String[] data = new String[4];
             plan.setBufferSize(pixelNum * 1024 * 1024);
             plan.initBand();

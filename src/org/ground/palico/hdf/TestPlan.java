@@ -24,7 +24,7 @@ class TestPlan {
     }
 
 
-    public void perform(String srcFile, String destFile, String dataSet) throws Exception {
+    public float[] perform(String srcFile, String destFile, String dataSet) throws Exception {
         HDFReader hdfReader = new HDFReader(srcFile);
 
         int[] band3 = hdfReader.getDataSet(3);
@@ -68,6 +68,8 @@ class TestPlan {
 
         HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
         hdfCreator.create();
+
+        return result;
     }
 
 }
