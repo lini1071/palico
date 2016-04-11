@@ -13,22 +13,27 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
-public class FloatRecordInputFormat extends FileInputFormat<LongWritable, FloatWritable> {
+public class FloatRecordInputFormat extends FileInputFormat<LongWritable, FixedLengthFloatArrayWritable> {
+	
+	private int numRecords;
 	
     @Override
-    public RecordReader<LongWritable, FloatWritable>
+    public RecordReader<LongWritable, FixedLengthFloatArrayWritable>
     	createRecordReader(InputSplit split, TaskAttemptContext context)
     		throws IOException, InterruptedException {
     	
+    	this.numRecords = context.getConfiguration().getInt("CONF_NUM_RECORDS_BLOCK", 1);
+    	
     	// the parameters(split, context) are passed one more at
     	// input.initialize() in MapTask.runNewMapper()
-    	return new FloatRecordReader();
+    	return new FloatRecordReader(this.numRecords);
     }
 
     // Minimum size of record is 4 (sizeof(float)).
     @Override
     public long getFormatMinSplitSize() {
-        return ((long) Float.BYTES);
+        //return ((long) (Float.BYTES * this.numRecords));
+    	return (long) Float.BYTES;
     }
 
     @Override

@@ -16,16 +16,17 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.IOException;
 
-public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, FloatWritable> {
+public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, FixedLengthFloatArrayWritable> {
 
 	@Override
-	public RecordWriter<LongWritable, FloatWritable>
+	public RecordWriter<LongWritable, FixedLengthFloatArrayWritable>
 	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
 		Configuration conf = context.getConfiguration();
 		String extension = "";
 		Path file = getDefaultWorkFile(context, extension);
 		FileSystem fs = file.getFileSystem(conf);
 		FSDataOutputStream fileOut = fs.create(file, false);
-		return new FloatRecordWriter(fileOut);
+		return new FloatRecordWriter(fileOut,
+			context.getConfiguration().getInt("CONF_NUM_RECORDS_BLOCK", 1));
 	}
 }

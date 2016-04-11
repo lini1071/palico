@@ -40,26 +40,9 @@ public class FixedLengthFloatArrayWritable {
 		return this.isBlockBroken;
 	}
 	
+
 	public FloatWritable get(int index) { return this.values[index]; }
 	public void set(FloatWritable[] values) { this.values = values; }
-
-	/*
-	@Override
-	public void readFields(DataInput in) throws IOException {
-		FloatWritable value = new FloatWritable();
-		
-		for (int i = 0; i < fieldLength; i++) {
-			value.readFields(in);	// read a value
-			this.values[i] = value;	// store it in values
-		}
-	}
-	
-	@Override
-	public void write(DataOutput out) throws IOException {
-		// write values
-		for (int i = 0; i < fieldLength; i++) {
-			this.values[i].write(out);
-		}
-	}
-	*/
+	//public float get(int index) { return this.values[index].get(); }
+	//public void set(int index, float value) { this.values[index].set(value); }
 }

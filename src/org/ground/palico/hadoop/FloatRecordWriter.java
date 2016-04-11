@@ -3,27 +3,27 @@ package org.ground.palico.hadoop;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
-public class FloatRecordWriter extends RecordWriter<LongWritable, FloatWritable> {
+public class FloatRecordWriter extends RecordWriter<LongWritable, FixedLengthFloatArrayWritable> {
 	
 	// It may be a network stream. So we can't use seek.
 	private FSDataOutputStream oStream;
 	
-	public FloatRecordWriter(FSDataOutputStream stream) {
+	private byte[] block_buf;
+	private ByteBuffer buf_wrap;
+
+	public FloatRecordWriter(FSDataOutputStream stream, int length) {
 		oStream = stream;
+		this.block_buf = new byte[length * Float.BYTES];
+		this.buf_wrap = ByteBuffer.wrap(block_buf);
 	}
 	
 	@Override
-<<<<<<< Updated upstream
-	public synchronized void write(LongWritable key, FloatWritable value) throws IOException, InterruptedException {
-//		oStream.writeFloat(value.get());
-		oStream.writeFloat((float)(oStream.getPos()));
-=======
 	public synchronized void write(LongWritable key, FixedLengthFloatArrayWritable value) throws IOException, InterruptedException {
 
 		buf_wrap.clear();
@@ -37,9 +37,8 @@ public class FloatRecordWriter extends RecordWriter<LongWritable, FloatWritable>
 		
 		// write buffer to stream
 		oStream.write(block_buf, 0, valueLength * Float.BYTES);
->>>>>>> Stashed changes
 	}
-	
+
 	@Override
 	public synchronized void close(TaskAttemptContext context) throws IOException, InterruptedException {
 		oStream.close();

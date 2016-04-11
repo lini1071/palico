@@ -15,25 +15,20 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.mortbay.log.Log;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
-public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable> {
+public class FloatRecordReader extends RecordReader<LongWritable, FixedLengthFloatArrayWritable> {
 	
     // File pointer position
     private long fpStart;
     private long fpPos;
     private long fpEnd;
-    private InputSplit split;
-    private TaskAttemptContext context;
-    
-    protected LongWritable key = new LongWritable();
-    protected FloatWritable value = new FloatWritable();
     private FSDataInputStream iStream;
+    
+    private LongWritable key = new LongWritable();
+    private FixedLengthFloatArrayWritable values;
 
-<<<<<<< Updated upstream
-    public FloatRecordReader() {
 
-    }
-=======
 	// variables for file i/o operation
 	private int numRecords;
 	private int size_buf;
@@ -41,11 +36,13 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
 	private byte[] buf;
 	private ByteBuffer wrap_buf;
 	
+	private InputSplit split;
+	private TaskAttemptContext context;
+	
 	public FloatRecordReader(int length) {
 		this.numRecords = length;
 		this.size_buf = Float.BYTES * numRecords;
 	}
->>>>>>> Stashed changes
 
     @Override
     public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
@@ -79,6 +76,7 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
 				+ size_buf + ". Setting block size to " + sLength + "...");
 			this.size_buf = (int) sLength;
 			this.numRecords = ((int) (this.size_buf / 4));
+			context.getConfiguration().setInt("CONF_NUM_RECORDS_BLOCK", (int) (this.size_buf / 4));
 		}
 		
 		this.buf 		= new byte[(int) this.size_buf];
@@ -89,15 +87,7 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
 
     @Override
     public synchronized boolean nextKeyValue() throws IOException, InterruptedException {
-		
-<<<<<<< Updated upstream
-        if (fpPos < fpEnd) {
-            key.set(fpPos);
-            value.set(iStream.readFloat());
-            fpPos += ((long) Float.BYTES);
-            return true;
-        } else return false;
-=======
+    	
     	// in.available() and (fpPos - fpEnd) may be different
     	// for the file which size is larger than block size!
     	/*
@@ -146,7 +136,6 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
     		return true;
     	}
     	else return false;
->>>>>>> Stashed changes
     }
 
     @Override
@@ -155,8 +144,8 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
     }
     
     @Override
-    public FloatWritable getCurrentValue() throws IOException, InterruptedException {
-        return value;
+    public FixedLengthFloatArrayWritable getCurrentValue() throws IOException, InterruptedException {
+        return values;
     }
 
     @Override
@@ -173,15 +162,5 @@ public class FloatRecordReader extends RecordReader<LongWritable, FloatWritable>
     public synchronized void close() throws IOException {
         iStream.close();
     }
-    
-    /*
-    public InputSplit getInputSplit() {
-    	return split;
-    }
-    
-    public TaskAttemptContext getTaskAttemptContext() {
-    	return context;
-    }
-    */
 
 }
