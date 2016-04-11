@@ -11,7 +11,7 @@ public class ExecutionResult {
 
     public ExecutionResult(String name, ComplexityBenchmarkInput input, double elapsed, float[] result){
         this.name = name;
-        this.size = input.getDataSize();
+        this.size = input.getData().getDataSize();
         this.complexity = input.getComplexity();
         this.elapsed = elapsed;
         this.result = result;

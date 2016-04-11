@@ -4,6 +4,7 @@ import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
 import com.amd.aparapi.device.Device;
 import org.ground.palico.ComplexityBenchmarkInput;
+import org.ground.palico.ComplexityInputData;
 
 public abstract class AparapiBandOperator {
     /**
@@ -11,9 +12,10 @@ public abstract class AparapiBandOperator {
      * 템플릿 메소드
      */
     public float[] run(ComplexityBenchmarkInput input, Kernel.EXECUTION_MODE mode){
-        final int size = input.getDataSize();
+        final ComplexityInputData data = input.getData();
+        final int size = data.getDataSize();
         final float[] result = new float[size];
-        Kernel kernel = getKernel(input.getBand1(), input.getBand2(), input.getBand3(), result);
+        Kernel kernel = getKernel(data.getBand1(), data.getBand2(), data.getBand3(), result);
         Device device = Device.best();
         Range range = device.createRange(size);
 

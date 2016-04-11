@@ -23,8 +23,9 @@ class BenchmarkSuite {
         String fileName = "data/performance_result.csv";
         CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
         for(int pixelCount = MIN_PIXEL_COUNT; pixelCount < MAX_PIXEL_COUNT; pixelCount++) {
+            ComplexityInputData inputData = new ComplexityInputData(pixelCount);
             for (int complexity = MIN_COMPLEXITY; complexity < MAX_COMPLEXITY; complexity++) {
-                ComplexityBenchmarkInput input = new ComplexityBenchmarkInput(pixelCount, complexity);
+                ComplexityBenchmarkInput input = new ComplexityBenchmarkInput(inputData, complexity);
                 ExecutionResult exeResult = perform(input);
                 exeResult.write(writer);
             }

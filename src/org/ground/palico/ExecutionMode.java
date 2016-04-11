@@ -40,9 +40,10 @@ public class ExecutionMode {
         }
                 : (input) -> {
             final SequentialBandOperator operation = SeqOperations.getOperation(input.getComplexity());
-            final int size = input.getDataSize();
+            final ComplexityInputData data = input.getData();
+            final int size = data.getDataSize();
             float[] result = new float[size];
-            operation.run(size, input.getBand1(), input.getBand2(), input.getBand3(), result);
+            operation.run(size, data.getBand1(), data.getBand2(), data.getBand3(), result);
             return result;
         };
     }
