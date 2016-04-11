@@ -66,19 +66,8 @@ public class FloatRecordReader extends RecordReader<LongWritable, FixedLengthFlo
         // Move file pointer of the file we are accessing.
         fpPos = fpStart;
         if (0 < fpStart) iStream.seek(fpStart);
-        
-        
-        
-		// check block size and initialize inner variables
-		if (sLength < this.size_buf)
-		{
-			Log.warn("Block size error : File Split size " + sLength + " is smaller than "
-				+ size_buf + ". Setting block size to " + sLength + "...");
-			this.size_buf = (int) sLength;
-			this.numRecords = ((int) (this.size_buf / 4));
-			context.getConfiguration().setInt("CONF_NUM_RECORDS_BLOCK", (int) (this.size_buf / 4));
-		}
-		
+     
+		// initialize inner variables
 		this.buf 		= new byte[(int) this.size_buf];
 		this.wrap_buf = ByteBuffer.wrap(this.buf);
 		this.wrap_buf.asFloatBuffer();
@@ -102,7 +91,6 @@ public class FloatRecordReader extends RecordReader<LongWritable, FixedLengthFlo
     		
         	// set position, clear buffer and read
            key.set(fpPos);
-           wrap_buf.clear();
 
     		if ((fpPos + size_buf) <= fpEnd) {
     			// we can read entire buffer size of data.
@@ -125,7 +113,8 @@ public class FloatRecordReader extends RecordReader<LongWritable, FixedLengthFlo
     			
     			fpPos += partSize;
     		}
-    		
+
+           wrap_buf.clear();
     		iStream.readFully(ptrBuffer);
 			for (int i = 0 ; i < bufferLength ; i++)
 			{
@@ -160,7 +149,12 @@ public class FloatRecordReader extends RecordReader<LongWritable, FixedLengthFlo
     
     @Override
     public synchronized void close() throws IOException {
-        iStream.close();
+		values = null;
+		
+		wrap_buf.clear();
+		wrap_buf = null;
+		buf = null;
+		iStream.close();
     }
 
 }

@@ -41,6 +41,10 @@ public class FloatRecordWriter extends RecordWriter<LongWritable, FixedLengthFlo
 
 	@Override
 	public synchronized void close(TaskAttemptContext context) throws IOException, InterruptedException {
+
+		buf_wrap = null;
+		block_buf = null;
+		
 		oStream.close();
 	}
 }

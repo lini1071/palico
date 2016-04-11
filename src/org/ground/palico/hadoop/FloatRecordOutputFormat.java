@@ -26,6 +26,7 @@ public class FloatRecordOutputFormat extends FileOutputFormat<LongWritable, Fixe
 		Path file = getDefaultWorkFile(context, extension);
 		FileSystem fs = file.getFileSystem(conf);
 		FSDataOutputStream fileOut = fs.create(file, false);
+		
 		return new FloatRecordWriter(fileOut,
 			context.getConfiguration().getInt("CONF_NUM_RECORDS_BLOCK", 1));
 	}
