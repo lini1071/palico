@@ -66,8 +66,11 @@ class TestPlan {
         kernel.execute(range);
         kernel.dispose();
 
-        HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
-        hdfCreator.create();
+        RawCreator rawCreator = new RawCreator("data/CHL.bin", result);
+        rawCreator.create();
+
+//        HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
+//        hdfCreator.create();
 
         return result;
     }
