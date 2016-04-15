@@ -23,25 +23,26 @@ class TestPlan {
         return modeName;
     }
 
-    public void perform(String srcFile, String destFile, String dataSet) throws Exception {
+
+    public float[] perform(String srcFile, String destFile, String dataSet) throws Exception {
         HDFReader hdfReader = new HDFReader(srcFile);
 
         int[] band3 = hdfReader.getDataSet(3);
         int[] band4 = hdfReader.getDataSet(4);
 
         int size = hdfReader.getSize();
-        double[] result = new double[size];
+        float[] result = new float[size];
 
 
         for (int i = 0; i < result.length; i++) {
-            result[i] = 0.0;
+            result[i] = 0.0f;
         }
-
-        double c0 = -0.0929;
-        double c1 = 0.2974;
-        double c2 = -2.2429;
-        double c3 = 0.8358;
-        double c4 = -0.0077;
+        //CHL OC2 알고리즘
+        float c0 = -0.0929f;
+        float c1 = 0.2974f;
+        float c2 = -2.2429f;
+        float c3 = 0.8358f;
+        float c4 = -0.0077f;
 
         Kernel kernel = new Kernel() {
             @Override
@@ -51,10 +52,10 @@ class TestPlan {
                 if (band3[gid] == 0.0 || band4[gid] == 0.0) {
                     result[gid] = 0.0f;
                 } else {
-                    double r1 = log((double)band3[gid] / (double)band4[gid]) / log(10);
-                    double r2 = r1 * r1;
-                    double r3 = r2 * r1;
-                    result[gid] = c0 + pow(10, c1 + c2*r1 + c3*r2 + c4*r3);
+                    float r1 = log((float) band3[gid] / (float) band4[gid]) / log(10);
+                    float r2 = r1 * r1;
+                    float r3 = r2 * r1;
+                    result[gid] = c0 + pow(10, c1 + c2 * r1 + c3 * r2 + c4 * r3);
                 }
             }
         };
@@ -65,8 +66,13 @@ class TestPlan {
         kernel.execute(range);
         kernel.dispose();
 
-        HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
-        hdfCreator.create();
+        RawCreator rawCreator = new RawCreator("data/CHL.bin", result);
+        rawCreator.create();
+
+//        HDFCreator hdfCreator = new HDFCreator(destFile, dataSet, result);
+//        hdfCreator.create();
+
+        return result;
     }
 
 }

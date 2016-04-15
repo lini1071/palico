@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.nio.ByteOrder;
 
+import static org.junit.Assert.assertEquals;
+
 public class TestRunner {
     @Test
     public void testPerformance() throws Exception {
@@ -25,14 +27,13 @@ public class TestRunner {
     @Test
     public void testCal() throws Exception {
         BasicConfigurator.configure();
-        HDFReader hdfReader = new HDFReader("data/COMS_GOCI_L1B_GA_20160301001642.he5");
-        int[] band3 = hdfReader.getDataSet(3);
+        TestPlan testPlan = new TestPlan(Kernel.EXECUTION_MODE.JTP);
+        float[] result = testPlan.perform("data/COMS_GOCI_L1B_GA_20160301001642.he5", "data/CHL.he5", "CHL dataset");
 
-        for (int i = 0; i < 1000; i++) {
-//            if(band3[i] > 0) {
-            System.out.println(i + ", " + band3[i]);
-//            }
-        }
+        float expected = 1.153370052f;
+        assertEquals(expected, result[221], 1e-5);
+        float expected2 = 1.199449412f;
+        assertEquals(expected2, result[1000], 1e-5);
     }
 
     @Test
