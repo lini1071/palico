@@ -11,8 +11,7 @@ public abstract class AparapiBandOperator {
      * 밴드 연산 실행 부분
      * 템플릿 메소드
      */
-
-    public float[] run(ComplexityBenchmarkInput input, Kernel.EXECUTION_MODE mode) {
+    public float[] run(ComplexityBenchmarkInput input, Kernel.EXECUTION_MODE mode){
         final ComplexityInputData data = input.getData();
         final int size = data.getDataSize();
         final float[] result = new float[size];

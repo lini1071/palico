@@ -1,6 +1,6 @@
 package org.ground.palico.gpu.aparapi;
 
-public class AparapiBandOperations {
+public class AparapiOpertions {
     private static AparapiBandOperator operators[] = {
             new AparapiBandOperator0(),
             new AparapiBandOperator1(),

@@ -60,13 +60,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/jarhdf5-2.10.1.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>ncsa.hdf.hdf5lib</groupId>
-            <artifactId>exceptions.HDF5LibraryException</artifactId>
-            <version>2.10.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jarhdfobj.jar</systemPath>
-        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
