@@ -3,8 +3,8 @@ package org.ground.palico;
 import com.amd.aparapi.Kernel;
 import org.ground.palico.base.SeqOperations;
 import org.ground.palico.base.SequentialBandOperator;
+import org.ground.palico.gpu.aparapi.AparapiBandOperations;
 import org.ground.palico.gpu.aparapi.AparapiBandOperator;
-import org.ground.palico.gpu.aparapi.AparapiOpertions;
 
 public class ExecutionMode {
     private Kernel.EXECUTION_MODE internalMode;
@@ -35,7 +35,7 @@ public class ExecutionMode {
 
     public IBenchmarkRunner getRunner(){
         return useAparapi ? (input) -> {
-            final AparapiBandOperator operation = AparapiOpertions.getOperation(input.getComplexity());
+            final AparapiBandOperator operation = AparapiBandOperations.getOperation(input.getComplexity());
             return operation.run(input, internalMode);
         }
                 : (input) -> {

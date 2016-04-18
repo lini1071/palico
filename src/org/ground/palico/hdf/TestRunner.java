@@ -12,8 +12,8 @@ public class TestRunner {
     @Test
     public void testPerformance() throws Exception {
         BasicConfigurator.configure();
-//        testPerformByOpr(new TestPlan(Kernel.EXECUTION_MODE.GPU));
-        TestPlan testPlan = new TestPlan(Kernel.EXECUTION_MODE.JTP);
+        TestPlan testPlan = new TestPlan(Kernel.EXECUTION_MODE.GPU);
+//        TestPlan testPlan = new TestPlan(Kernel.EXECUTION_MODE.JTP);
 
         long start = System.currentTimeMillis();
         testPlan.perform("data/COMS_GOCI_L1B_GA_20160301001642.he5", "data/CHL.he5", "CHL dataset");
