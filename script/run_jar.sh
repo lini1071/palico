@@ -13,7 +13,7 @@ then
 	exit $POS_PARAMS_MISSING
 fi
 
-declare path_host="hdfs://192.168.100.6:9000"
+declare path_host="hdfs://gsd-prihost:8020"
 
 declare -i numfl
 declare -i phase=0
@@ -50,23 +50,23 @@ do
 		#echo "Number of floats in one block :" $1
 
 		path_output="$path_host/output/$i/$j/"
-		merge_output="/home/gsd/바탕화면/output/res_$i_$j.img"
+		merge_output="/home/gsd/바탕화면/output/res_""$i""_""$j"".img"
 		
 		time_start=$(date +"%s%N")
 		phase=1
-		./bin/hadoop "jar" $1 $numfl $4 $path_output > stdout
+		yarn "jar" $1 $numfl $4 $path_output
 		wait
 
 		# and merge each map output files to the one
 		phase=2
-		./bin/hadoop "fs" "-getmerge" $path_output $merge_output > stdout
+		hadoop "fs" "-getmerge" $path_output $merge_output
 		wait
 
 		# calculate execution time
 		phase=0
 		time_end=$(date +"%s%N")
 		#echo "Elapsed time :" $((time_end - time_start))
-		echo "$i,$numfl,$(( (time_end - time_start) / 1000000 ))"
+		echo "$i,$numfl,$(( (time_end - time_start) / 1000000 ))" >> $6
 
 		# at the end, delete result file
 		#exec "./bin/hadoop fs -rm -r" $path
