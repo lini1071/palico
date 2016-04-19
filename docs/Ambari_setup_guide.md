@@ -47,6 +47,7 @@ wget의 repository 주소 목록은 다음에 등재되어 있다.
 <a href="http://docs.hortonworks.com/HDPDocuments/Ambari-2.2.1.1/bk_Installing_HDP_AMB/content/_ambari_repositories.html">
 Ambari repositories
 </a>
+
 ambari-server를 실행하기 위해서는 root 권한이 있어야 한다. ambari-server를 실행하기 전 사용자 정의 환경설정을 해야 할 경우 ambari-server setup을 입력한다. server 호스트가 JDK를 기본 경로가 아닌 별도의 경로에 설치했을 경우, PostgreSQL이 아닌 다른 SQL을 사용할 경우는 setup을 통해 설정해주어야 한다.
 
 MySQL을 새로 설치한 뒤 Ambari에서 이와 연동 가능하도록 설정하고자 할 경우 아래의 절차를 따른다.
@@ -66,7 +67,9 @@ mysql -u ambari -p<ambari_password>
 > exit
 ```
 이전 setup에서 ambari가 사용할 database user명은 ambari로 설정했다고 가정한다. setup에서 기본으로 사용하려는 ambari_password 값은 bigdata이다. MySQL이 아닌 다른 SQL에 관한 내용, 또는 조금 더 자세한 내용이 필요할 경우 아래의 문서를 참고한다.
+
 <a href="http://docs.hortonworks.com/HDPDocuments/Ambari-2.2.1.1/bk_ambari_reference_guide/content/_using_non-default_databases_-_ambari.html">Using non-default databases</a>
+
 설정이 완료되었으면 ambari-server start를 통해 서버 프로세스가 시작하는지 확인한다.
 
 
