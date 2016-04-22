@@ -16,7 +16,7 @@
   8. Step 6 - Assigning slave agents
   9. Step 7 - Customizing each service
   10. Step 8 - Review selected services
-5. 
+5. 작업 수행 및 UI를 통한 내역 확인
 
 ### 1. 개요
 
@@ -160,22 +160,24 @@ Host의 Status는 처음에 Installing에서 시작해, 정상적으로는 Regis
 설치 진행 내역이 표시되며, 해당 작업에 실패한 경우 그 오류를 확인할 수 있어 이를 수정한 뒤 재시도할 수 있다.
 
 
-### 5. YARN 작업 수행 및 로그 확인
+### 5. 작업 수행 및 UI를 통한 내역 확인
 
 ![client command in bash shell](/docs/images/screenshot_client_comm_shell.png)  
 agent host에 YARN client가 설치되어 있는 경우 터미널에서 yarn jar 명령을 통해 jar application을 submit할 수 있다. 마찬가지로 hadoop jar, spark-submit 등도 client가 설치되어 있을 시 가능하다. 다만 hadoop jar는 YARN이 설치되어 있는 환경에서는 권장되지 않는다.
 
+![executing application using yarn jar](/docs/images/screenshot_executing_application_using_YARN.png)  
+다음은 yarn jar로 application을 submit하는 예제를 갈무리한 것이다. 빨간 줄 부분은 전달할 jar 파일의 이름을 기입하는 필수 구문이고, 뒤에 붙는 파란 줄 부분은 application에서 요구하는 부수 arguments이다.
+
 ![Ambari server web UI dashboard HDFS](/docs/images/screenshot_ambari_dashboard_HDFS.png)  
 ![Ambari server web UI dashboard YARN](/docs/images/screenshot_ambari_dashboard_YARN.png)  
-Ambari Server Web UI Dashboard에서는 자원 사용량 등을 모니터링할 수 있다. MapReduce를 수행할 때의 CPU 점유율과 메모리 사용량 등은 YARN 탭에서 모니터링이 가능하다.
+Ambari Server Web UI Dashboard에서는 자원 사용량 등을 모니터링할 수 있다. MapReduce를 수행할 때의 CPU 점유율과 메모리 사용량 등은 YARN 탭에서 모니터링이 가능하다. HDFS 상태의 모니터링은 Web UI의 우측 상단에서 Dashboard를 눌러서, YARN의 경우는 이후 좌측 탭에서 YARN을 선택하여 수행할 수 있다.
 
+![Ambari server web UI Quick Links HDFS](/docs/images/screenshot_services_quick-links_HDFS.png)  
+![Ambari server web UI Quick Links MapReduce](/docs/images/screenshot_services_quick-links_MapReduce.png)  
+![Ambari server web UI Quick Links YARN](/docs/images/screenshot_services_quick-links_YARN.png)  
+HDFS, MapReduce, YARN, 그리고 Spark의 경우는 위와 같이 Quick Links라는 메뉴가 추가되어 이를 통해 각 서비스를 관리하는 node의 Web Application 서버로 접속할 수 있게 해준다. HDFS의 Quick Links는 DFS의 관리를 담당하는 NameNode UI로 연결되어 이 부분에 대한 중요도는 다소 낮다. Application의 시작 및 종료 그리고 작업 내역은 MapReduce와 YARN의 Quick Links를 통해 각각 JobHistory, ResourceManager 서버로 접속하여 확인할 수 있다.
 
-![YARN ResourceManager Screenshot](/docs/images/screenshot_resource_manager_hadoop_YARN.png)
 ![YARN JobHistory Screenshot](/docs/images/screenshot_jobhistory_hadoop_YARN.png)
+![YARN ResourceManager Screenshot](/docs/images/screenshot_resource_manager_hadoop_YARN.png)
 
-YARN에서는 ResourceManager에서 현재 NodeManager를 통해 등록된 호스트들과 작업의 진행 상태, 스케쥴러 등을 확인할 수 있으며 종료된 작업에 대해서는 JobHistory에서 Counter와 같은 추가적인 기록의 열람을 제공한다. Ambari 기본 설정에 따르면
-ResourceManager Web Application의 주소는 ResourceManager agent의 8088 포트,  
-JobHistory Web Application의 주소는 ResourceManager agent의 19888 포트이다.  
-e.g.) http://localhost:8088, http://localhost:19888
 
-App Timeline Server도 Web Application을 제공하나 ResourceManager App에서 같이 확인이 가능한 듯 하며 주소는 8188 포트이다. 이 주소들의 포트는 Services의 YARN configs 탭 Advanced에서 확인할 수 있다.
