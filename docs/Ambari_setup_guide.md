@@ -16,7 +16,7 @@
   8. Step 6 - Assigning slave agents
   9. Step 7 - Customizing each service
   10. Step 8 - Review selected services
-
+5. 
 
 ### 1. 개요
 
@@ -158,3 +158,24 @@ Host의 Status는 처음에 Installing에서 시작해, 정상적으로는 Regis
 
 ![ambari-server cluster install step 9](/docs/images/screenshot_ambari-server_cluster-install_step9.png)
 설치 진행 내역이 표시되며, 해당 작업에 실패한 경우 그 오류를 확인할 수 있어 이를 수정한 뒤 재시도할 수 있다.
+
+
+### 5. YARN 작업 수행 및 로그 확인
+
+![client command in bash shell](/docs/images/screenshot_client_comm_shell.png)  
+agent host에 YARN client가 설치되어 있는 경우 터미널에서 yarn jar 명령을 통해 jar application을 submit할 수 있다. 마찬가지로 hadoop jar, spark-submit 등도 client가 설치되어 있을 시 가능하다. 다만 hadoop jar는 YARN이 설치되어 있는 환경에서는 권장되지 않는다.
+
+![Ambari server web UI dashboard HDFS](/docs/images/screenshot_ambari_dashboard_HDFS.png)  
+![Ambari server web UI dashboard YARN](/docs/images/screenshot_ambari_dashboard_YARN.png)  
+Ambari Server Web UI Dashboard에서는 자원 사용량 등을 모니터링할 수 있다. MapReduce를 수행할 때의 CPU 점유율과 메모리 사용량 등은 YARN 탭에서 모니터링이 가능하다.
+
+
+![YARN ResourceManager Screenshot](/docs/images/screenshot_resource_manager_hadoop_YARN.png)
+![YARN JobHistory Screenshot](/docs/images/screenshot_jobhistory_hadoop_YARN.png)
+
+YARN에서는 ResourceManager에서 현재 NodeManager를 통해 등록된 호스트들과 작업의 진행 상태, 스케쥴러 등을 확인할 수 있으며 종료된 작업에 대해서는 JobHistory에서 Counter와 같은 추가적인 기록의 열람을 제공한다. Ambari 기본 설정에 따르면
+ResourceManager Web Application의 주소는 ResourceManager agent의 8088 포트,  
+JobHistory Web Application의 주소는 ResourceManager agent의 19888 포트이다.  
+e.g.) http://localhost:8088, http://localhost:19888
+
+App Timeline Server도 Web Application을 제공하나 ResourceManager App에서 같이 확인이 가능한 듯 하며 주소는 8188 포트이다. 이 주소들의 포트는 Services의 YARN configs 탭 Advanced에서 확인할 수 있다.
