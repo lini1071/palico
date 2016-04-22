@@ -181,3 +181,5 @@ HDFS, MapReduce, YARN, 그리고 Spark의 경우는 위와 같이 Quick Links라
 ![YARN ResourceManager Screenshot](/docs/images/screenshot_resource_manager_hadoop_YARN.png)
 
 
+-----
+ResourceManager와 JobHistory에 대한 부가 설명이 필요함.
