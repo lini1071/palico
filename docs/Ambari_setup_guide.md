@@ -2,10 +2,10 @@
 
 ### 순서
 
- 1. 개요
- 2. 설치 전 준비
- 3. 설치
- 4. 클러스터 설정
+1. 개요
+2. 설치 전 준비
+3. 설치
+4. 클러스터 설정
 
 
 #### 1. 개요
@@ -84,3 +84,49 @@ mysql -u ambari -p<ambari_password>
 ![ambari-server web login](/docs/images/screenshot_ambari-server_web-login.png)
 클러스터를 구축하기 위해 8080 포트의 web server로 접속을 시도하면 다음과 같은 화면을 볼 수 있다. admin 계정의 기본 설정값은 ID/PW admin/admin으로 되어 있다.
 
+
+![ambari-server manage Ambari](/docs/images/screenshot_ambari-server_manage.png)
+정상적으로 로그인이 수행되면 다음 화면이 나온다. Launch Install Wizard를 눌러 설치 마법사를 실행한다.
+
+
+![ambari-server cluster install step 0](/docs/images/screenshot_ambari-server_cluster-install_step0.png)
+클러스터의 이름을 정해주는 단계이다.
+
+
+![ambari-server cluster install step 1](/docs/images/screenshot_ambari-server_cluster-install_step1.png)
+HDP(Hortonworks Data Platform) 서비스 스택 버전을 선택하는 단계이다. 작성일(Apr/22/2016) 기준으로 2.1부터 2.4까지의 네 가지 버전을 선택할 수 있다. 2.4의 경우는 debian7, redhat6&7, suse11, ubuntu12&14의 6가지 ost에 대한 Ambari agent 자동 설치를 지원한다. Ubuntu 14의 경우 14.04.4는 ubuntu14로 인식하나 그 이전의 버전으로 설치가 되어 있을 경우 ubuntu14가 아닌 다른 os로 인식하여 자동 설치가 지원되지 않는 경우가 발생할 수 있으므로 유의해야 한다.
+
+
+![ambari-server cluster install step 2](/docs/images/screenshot_ambari-server_cluster-install_step2.png)
+이 단계부터 실질적인 클러스트 구성을 계획하는 단계라고 할 수 있다. /etc/hosts에 등록해둔 agent가 될 호스트들의 hostname을 한줄씩 기입한다. 또는 기재되어 있듯이 명칭에서 일련의 규칙성을 가지며 숫자로 구별되는 여러 호스트들을 Pattern Expressions를 통해 등록할 수도 있다. Host registration information에서 이 문서에서처럼 SSH 연결을 준비했고 이를 사용하는 경우 ssh-keygen을 실행하여 생성된 id_rsa (priavte key, not .pub) 파일을 선택한다. 이후 Register and Confirm 버튼을 선택하면 agent가 될 각 호스트에 ambari-agent의 설치를 시도한다.
+
+
+![ambari-server cluster install step 3](/docs/images/screenshot_ambari-server_cluster-install_step3.png)
+Host의 Status는 처음에 Installing에서 시작해, 정상적으로는 Registering을 거쳐 Success로 작업이 완료된다. Success가 되는 경우 명단에 오른 host들에 ambari-agent 설치가 완료되었다는 뜻이며 apt-get remove ambari-agent로 이를 삭제한 뒤 본 단계를 다시 반복할 수 있다. 아래에 안내문 형식으로 경고가 발생할 수 있는데 Transparent Huge Page Issues의 경우는 hugepages 패키지를 설치한 뒤 hugeadm --thp-never를 실행했음에도 경고가 사라지지 않음을 확인했다.
+
+
+![ambari-server cluster install step 4](/docs/images/screenshot_ambari-server_cluster-install_step4.png)
+클러스터에 설치하기를 원하는 서비스를 선택하는 단계이다. 여기에서 자신이 원하는 것만을 고른다 하더라도 ambari web interface에서 추가적으로 필요한 기능을 반드시 설치하게끔 한다(OK를 누르지 않으면 설치가 더 진행되지 않는다).
+
+
+![ambari-server cluster install step 5](/docs/images/screenshot_ambari-server_cluster-install_step5.png)
+각 서비스들의 daemon을 실행할 master host를 설정하는 단계이다. 이 단계에서는 HDFS의 NameNode, YARN의 ResourceManager와 같은 필수(master) daemon의 실행 위치를 결정한다.
+
+
+![ambari-server cluster install step 6](/docs/images/screenshot_ambari-server_cluster-install_step6.png)
+이 단계에서는 각 host마다 부수적(slave)인 daemon들의 실행 여부를 결정하는 단계이다. HDFS의 DataNode, YARN의 NodeManager 등이 이에 해당한다.
+
+
+![ambari-server cluster install step 7](/docs/images/screenshot_ambari-server_cluster-install_step7.png)
+이 단계에서는 각 서비스의 세부 config을 설정하는 단계이다. 기본 세팅 탭에서는 MapReduce의 memory 할당량과 같은 값을 설정할 수 있다. HDFS의 경우 Advanced 탭에서는 General에서 block replication 정도를 결정하는 dfs.replication을, Advanced hdfs-site에서 dfs의 한 block 당 size 값이 될 dfs.blocksize, dfs의 각 파일에 접근 권한을 설정할 지의 여부인 dfs.permissions.enabled 등의 값을 설정할 수 있다.
+
+![ambari-server cluster install step 7 - setting hive password](/docs/images/screenshot_ambari-server_cluster-install_step7-hive.png)
+이 단계에서는 Hive Metastore의 database password를 설정해주어야 다음 단계로 넘어갈 수 있다.
+
+
+![ambari-server cluster install step 8](/docs/images/screenshot_ambari-server_cluster-install_step8.png)
+선택한 내역들을 확인시켜주는 단계이다. Deploy를 누르면 ambari-agent를 통해 선택한 내용들을 설치하는 준비를 시작한다.
+
+
+![ambari-server cluster install step 9](/docs/images/screenshot_ambari-server_cluster-install_step9.png)
+설치 진행 내역이 표시되며, 해당 작업에 실패한 경우 그 오류를 확인할 수 있어 이를 수정한 뒤 재시도할 수 있다.
