@@ -4,9 +4,7 @@ import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
 import com.amd.aparapi.device.Device;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -44,36 +42,45 @@ public class CHLRawGenerator {
             FileChannel inputChannel = FileChannel.open(Paths.get(srcFile), StandardOpenOption.READ);
             FileChannel outputChannel = FileChannel.open(Paths.get(defFile), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
-            //inputChannel을 MAXAVAILABLEMEM 사이즈의 버퍼만큼 읽음.
             while (inputChannel.read(readBuffer) > 0) {
-                //
+                //ByteBuffer -> byte[] -> floatBuffer -> float[]
                 float[] band = new float[readBuffer.capacity() / Float.BYTES];
                 int bandSize = band.length;
+
                 //readBuffer(MAXAVAILABLEMEM 사이즈만큼 읽은 버퍼)를 배열화하여 array에 저장한다.
                 byte[] array = readBuffer.array();
+
                 //array를 floatBuffer화하여 floatBuffer에 저장한다.
-                FloatBuffer floatBuffer = ByteBuffer.wrap(array).asFloatBuffer();
-                //floatBuffer의 값을 band에 저장한다.(ByteBuffer -> byte[] -> floatBuffer -> float[])
-                floatBuffer.get(band);
-                //알고리즘 수행 후 결과 값 output 배열에 저
+                FloatBuffer inputBuffer = ByteBuffer.wrap(array).asFloatBuffer();
+
+                //floatBuffer의 값을 band에 저장한다.
+                inputBuffer.get(band);
+
+                //알고리즘 수행 후 결과 값 output 배열에 저장
                 float[] output;
                 if (getModeName().equals("GPU") || getModeName().equals("JTP")) {
                     output = performByAparapi(band);
                 } else {
                     output = performBySequential(band, bandSize);
                 }
-                //float[] -> FloatBuffer -> ByteBuffer)
-                //output 배열을 floatBuffer화하여 outputBuffer에 저장
-                FloatBuffer outputBuffer = FloatBuffer.wrap(output);
-                int obSize = outputBuffer.capacity();
-                //byteBuffer 생성
-                ByteBuffer byteBuffer = ByteBuffer.allocate(obSize * Float.BYTES);
-                byteBuffer.order(ByteOrder.nativeOrder());
-                byteBuffer.putFloat(outputBuffer.get());
-//                byteBuffer.asFloatBuffer().put(outputBuffer);
-                outputChannel.write(byteBuffer);
-                outputChannel.position(obSize);
-                System.out.printf("obSize : %d outputChannel: %d inputChannel: %d\n", obSize, outputChannel.position(), inputChannel.position());
+
+                //float[] -> floatBuffer -> byte[] -> ByteBuffer
+                //float[] -> flpatBuffer
+                FloatBuffer floatBuffer = FloatBuffer.wrap(output);
+                int obSize = floatBuffer.capacity();
+
+                //floayBuffer -> byte[]
+                ByteBuffer outputBuffer = ByteBuffer.allocate(obSize * Float.BYTES);
+                outputBuffer.asFloatBuffer().put(floatBuffer);
+                byte[] byteArray = outputBuffer.array();
+
+                //byte[] -> byteBuffer
+                ByteBuffer buf = ByteBuffer.wrap(byteArray);
+
+                //write
+                outputChannel.write(buf);
+//                outputChannel.position(obSize);
+                System.out.printf(buf.capacity() + " obSize : %d outputChannel: %d inputChannel: %d\n", obSize, outputChannel.position(), inputChannel.position());
                 readBuffer.clear();
             }
         } catch (IOException ex) {

@@ -3,29 +3,29 @@ package org.ground.palico;
 import org.junit.Test;
 
 public class BenchmarkSuiteTest {
-    private void testPerform(ExecutionMode mode) throws Exception{
+    private void testPerform(ExecutionMode mode) throws Exception {
         new BenchmarkSuite(mode).perform();
     }
 
     @Test
-    public void testGPU() throws Exception{
+    public void testBenchmarkByGPU() throws Exception {
         testPerform(ExecutionMode.GPU);
     }
 
     @Test
-    public void testJTP() throws Exception {
+    public void testBenchmarkByJTP() throws Exception {
         testPerform(ExecutionMode.JTP);
     }
 
     @Test
-    public void testSEQ() throws Exception {
+    public void testBenchmarkBySEQ() throws Exception {
         testPerform(ExecutionMode.SEQ);
     }
 
     @Test
-    public void testAll() throws Exception {
-        testGPU();
-        testJTP();
-        testSEQ();
+    public void testAllBenchmark() throws Exception {
+        testBenchmarkByGPU();
+        testBenchmarkByJTP();
+        testBenchmarkBySEQ();
     }
 }
