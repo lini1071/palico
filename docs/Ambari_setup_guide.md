@@ -211,13 +211,13 @@ MapReduce2의 Quick Links에서 JobHistory UI를 선택했을 때의 Web UI 화�
 좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.
 
 ![MapReduce2 JobHistory WebApp UI Job Configs](/docs/images/screenshot_MapReduce_jobhistory_job_conf.png)  
-해당 job을 수행했을 당시의 설정 값들을 확인할 수 있다. 
+Job의 Configuration을 선택하면 해당 job을 수행했을 당시의 설정 값들을 확인할 수 있다. 
 
 ![MapReduce2 JobHistory WebApp UI Job Map Tasks](/docs/images/screenshot_MapReduce_jobhistory_job_map-tasks.png)  
 다음은 클러스터에서 실행한 job들 중 하나를 골라 그 map task들을 확인한 내역이다. 작업의 수행 여부와 시작 및 종료 시각, 수행 시간을 확인할 수 있으며 각 map task 항목을 클릭하면 해당 task가 수행된 node와 저장된 log 내역을 추가적으로 확인할 수 있다.
 
 ![MapReduce2 JobHistory WebApp UI Config](/docs/images/screenshot_MapReduce_jobhistory_conf.png)  
-Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 설정값을 xml 형태로 표시해준다.
+Tools 탭의 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 설정값을 xml 형태로 표시해준다.
 
 
 ##### YARN ResourceManager
@@ -226,7 +226,7 @@ Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce,
 다음은 Services의 YARN 탭에서 ResourceManager UI를 선택했을 때의 WebAPP UI 메인 페이지 화면을 스크린샷으로 저장한 것이다.
 
 ![YARN ResourceManager WebApp UI Cluster Node list](/docs/images/screenshot_YARN_resource-manager_cluster_nodes.png)  
-좌측 Cluster 탭의 Nodes를 통해 Node 리스트를 확인할 수 있다.
+좌측 Cluster 탭의 Nodes를 통해 현재 클러스트의 노드 리스트를 확인할 수 있다.
 
 ![YARN ResourceManager WebApp UI Cluster Applications](/docs/images/screenshot_YARN_resource-manager_applications.png)  
 Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 수행 종료된 어플리케이션 목록을 확인할 수 있다. 어플리케이션 유형이 MAPREDUCE(MapReduce)인 경우 각 항목에서 Tracking UI 열의 History를 클릭하면 위의 JobHistory server UI 페이지로 이동한다. 이미 완료된 작업의 Counters 값을 확인해야 하는 경우 등은 이 순서를 따른다.
@@ -237,7 +237,7 @@ Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 �
 현재 실행 중(RUNNING)인 어플리케이션이 있다면 RUNNING 페이지에 그 내용이 등재되며 리소스 요청 내역과 각 호스트의 로그들을 열람할 수 있고, 또한 Tracking UI가 ApplicationMaster로 표기되어 작업 진행 상황을 확인할 수 있다.
 
 ![YARN ResourceManager WebApp UI Cluster Scheduler](/docs/images/screenshot_YARN_resource-manager_scheduler.png)  
-Scheduler에서는 스케쥴러 내부 상태를 표시하여 준다.
+Scheduler에서는 스케쥴러 내부 상태와 그에 할당된 자원 등을 표시하여 준다.
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
 Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 내용이 완전히 동일하지는 않고 미세한 차이가 있다.
