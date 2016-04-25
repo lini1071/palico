@@ -17,6 +17,9 @@
   9. Step 7 - Customizing each service
   10. Step 8 - Review selected services
 5. 작업 수행 및 UI를 통한 내역 확인
+  1. Submitting Application (jar)
+  2. Monitoring services
+  3. More information
 
 ### 1. 개요
 
@@ -162,24 +165,49 @@ Host의 Status는 처음에 Installing에서 시작해, 정상적으로는 Regis
 
 ### 5. 작업 수행 및 UI를 통한 내역 확인
 
+#### 1. Submitting Application (jar)
 ![client command in bash shell](/docs/images/screenshot_client_comm_shell.png)  
 agent host에 YARN client가 설치되어 있는 경우 터미널에서 yarn jar 명령을 통해 jar application을 submit할 수 있다. 마찬가지로 hadoop jar, spark-submit 등도 client가 설치되어 있을 시 가능하다. 다만 hadoop jar는 YARN이 설치되어 있는 환경에서는 권장되지 않는다.
 
 ![executing application using yarn jar](/docs/images/screenshot_executing_application_using_YARN.png)  
 다음은 yarn jar로 application을 submit하는 예제를 갈무리한 것이다. 빨간 줄 부분은 전달할 jar 파일의 이름을 기입하는 필수 구문이고, 뒤에 붙는 파란 줄 부분은 application에서 요구하는 부수 arguments이다.
 
-![Ambari server web UI dashboard HDFS](/docs/images/screenshot_ambari_dashboard_HDFS.png)  
-![Ambari server web UI dashboard YARN](/docs/images/screenshot_ambari_dashboard_YARN.png)  
-Ambari Server Web UI Dashboard에서는 자원 사용량 등을 모니터링할 수 있다. MapReduce를 수행할 때의 CPU 점유율과 메모리 사용량 등은 YARN 탭에서 모니터링이 가능하다. HDFS 상태의 모니터링은 Web UI의 우측 상단에서 Dashboard를 눌러서, YARN의 경우는 이후 좌측 탭에서 YARN을 선택하여 수행할 수 있다.
+#### 2. Monitoring services
+![Ambari server web UI dashboard](/docs/images/screenshot_ambari_dashboard_all.png)  
+Ambari Server Web UI는 각 구성요소마다 나뉘어진 모니터링 기능을 한 관리 페이지에서 할 수 있게끔 해준다. Dashboard에서는 현재 클러스터의 전체적인 가용 수치 및 자원 사용량 등을 모니터링할 수 있다. 기본적으로는 스크린샷에서 나온 것과 같이 HDFS와 YARN 환경에 관한 내역을 표시해준다. 
+
+![Ambari server web UI service monitor HDFS](/docs/images/screenshot_ambari_service-monitor_HDFS.png)  
+![Ambari server web UI service monitor YARN](/docs/images/screenshot_ambari_service-monitor_YARN.png)  
+각 구성요소마다에 대한 모니터링도 가능하다. 주로 NameNode의 데이터들을 나타내는 HDFS 환경 상황 모니터링은 HDFS 탭에서, MapReduce를 수행할 때의 CPU 점유율과 메모리 사용량 등은 YARN 탭에서 모니터링이 가능하다. 각 서비스 모니터는 Web UI 우측 상단의 Services에서 해당하는 서비스 이름을 선택해서 확인할 수 있다.
 
 ![Ambari server web UI Quick Links HDFS](/docs/images/screenshot_services_quick-links_HDFS.png)  
 ![Ambari server web UI Quick Links MapReduce](/docs/images/screenshot_services_quick-links_MapReduce.png)  
 ![Ambari server web UI Quick Links YARN](/docs/images/screenshot_services_quick-links_YARN.png)  
 HDFS, MapReduce, YARN, 그리고 Spark의 경우는 위와 같이 Quick Links라는 메뉴가 추가되어 이를 통해 각 서비스를 관리하는 node의 Web Application 서버로 접속할 수 있게 해준다. HDFS의 Quick Links는 DFS의 관리를 담당하는 NameNode UI로 연결되어 이 부분에 대한 중요도는 다소 낮다. Application의 시작 및 종료 그리고 작업 내역은 MapReduce와 YARN의 Quick Links를 통해 각각 JobHistory, ResourceManager 서버로 접속하여 확인할 수 있다.
 
-![YARN JobHistory Screenshot](/docs/images/screenshot_jobhistory_hadoop_YARN.png)
-![YARN ResourceManager Screenshot](/docs/images/screenshot_resource_manager_hadoop_YARN.png)
+#### 3. More informations
+본 단락에서는 5.2에서 Quick Links를 통하여 HDFS, MapReduce, YARN의 UI에 접속하였을 때의 내용을 기술한다.
+![Hadoop NameNode WebApp UI Overview](/docs/images/screenshot_HDFS_namenode_webapp_overview.png)  
+Services의 HDFS 탭에서 NameNode UI를 선택했을 때는 다음과 같은 WebAPP UI를 확인할 수 있다. Summary에 DFS의 상황이 요약되어 있다.
+
+![Hadoop NameNode WebApp UI Datanodes Monitor](/docs/images/screenshot_HDFS_namenode_webapp_datanodes-monitor.png)  
+상단의 Datanodes 탭에서는 현재 DFS 시스템에서 연결된 모든 DataNode들과 각각의 상태를 간략히 볼 수 있다.
+
+![Hadoop NameNode WebApp UI FileSystem Explorer](/docs/images/screenshot_HDFS_namenode_webapp_fs-explorer.png)  
+Utilities 탭의 Browse the file system을 선택하면 다음과 같이 Web UI에서 DFS 안의 파일들을 탐색할 수 있다. 파일 내용들을 바로 확인할 수는 없지만 각 파일을 다운로드할 수 있어서 이후 확인이 가능하다.
+
+![MapReduce2 JobHistory WebApp UI Main](/docs/images/screenshot_MapReduce_jobhistory_main.png)  
+MapReduce2의 Quick Links에서 JobHistory UI를 선택했을 때의 Web UI 화면이다. 이 기본 화면의 출력은 좌측 Application 탭의 Jobs를 선택한 경우와 동일하다. About은 build version과 JobHistory server daemon 시작 시간만을 출력해주기 때문에 스크린샷을 통한 추가 설명을 생략한다.
+
+![MapReduce2 JobHistory WebApp UI Config](/docs/images/screenshot_MapReduce_jobhistory_conf.png)  
+Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 설정값을 xml 형태로 표시해준다.
+
+![MapReduce2 JobHistory WebApp UI Local logs](/docs/images/screenshot_MapReduce_jobhistory_local-logs.png) 
 
 
------
-ResourceManager와 JobHistory에 대한 부가 설명이 필요함.
+![MapReduce2 JobHistory WebApp UI Server stacks](/docs/images/screenshot_MapReduce_jobhistory_server-stacks.png) 
+
+![MapReduce2 JobHistory WebApp UI Server metrics](/docs/images/screenshot_MapReduce_jobhistory_server-metrics.png) 
+
+![YARN ResourceManager Screenshot](/docs/images/screenshot_YARN_resource_manager_.png)  
+
