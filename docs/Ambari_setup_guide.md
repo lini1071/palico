@@ -208,7 +208,7 @@ MapReduce2의 Quick Links에서 JobHistory UI를 선택했을 때의 Web UI 화�
 수행된 job 목록 중 하나를 택했을 경우 다음과 같은 Job overview 화면을 볼 수 있다. 여기서 Node의 링크를 클릭했을 때는 DataNode WebApp UI로 이동하게 되며 node에 관한 간략한 내용을 보여준다. Task type과 Attempt Type을 Map과 Reduce의 둘로 나누어 두었으며, attempt의 경우는 failed, killed, successful의 세 가지 경우로 확인할 수 있다. Map과 Reduce의 Task type으로 나눈 작업 내역은 좌측에 새로 생긴 Job 탭을 통해서도 확인할 수 있다(같은 페이지로 링크되어 있음).
 
 ![MapReduce2 JobHistory WebApp UI Job Counters](/docs/images/screenshot_MapReduce_jobhistory_job_counters.png)  
-좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.  
+좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Counter는 어떤 값을 세기 위해 정의한 누산용 변수라고 볼 수 있다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.  
 MapReduce에서 정의하는 기본 Counter들의 목록은 스크린샷의 내용과 같으며, JobHistory server에서 확인할 수 있는 Counter들의 값은 스크린샷과 같이 5가지로 나눌 수 있다. File System Counters 항목은 주로 HDFS에서 요청된 I/O Operation 수와 그 데이터 크기를 저장한다. Job Counters 항목은 map/reduce task 수와 task에 걸린 시간을 저장하며, Map-Reduce Framework 항목에는 CPU 사용시간, GC 호출 시간, I/O 레코드 수 및 힙·스냅샷 크기 등의 Counter들이 저장된다. 나머지 두 개 중 하나는 File Input Format Counter ; 읽은(read) 바이트 크기, 또 하나는 File Output Format Counter ; 쓴(write) 바이트 크기를 저장한다. 
 
 ![MapReduce2 JobHistory WebApp UI Job Configs](/docs/images/screenshot_MapReduce_jobhistory_job_conf.png)  
@@ -224,21 +224,26 @@ Tools 탭의 Configuration을 선택했을 때는 다음과 같이 mapreduce, ma
 ##### YARN ResourceManager
 
 ![YARN ResourceManager WebApp UI Screenshot](/docs/images/screenshot_YARN_resource-manager.png)  
-다음은 Services의 YARN 탭에서 ResourceManager UI를 선택했을 때의 WebAPP UI 메인 페이지 화면을 스크린샷으로 저장한 것이다.
+다음은 Services의 YARN 탭에서 ResourceManager UI를 선택했을 때의 WebAPP UI 메인 페이지 화면을 스크린샷으로 저장한 것이고, 좌측 메뉴에서 Applications을 고른 경우와 같다. 이 페이지에서는 수행 대기 중이거나 수행 중인, 또는 수행 종료된 어플리케이션 목록을 확인할 수 있다. 어플리케이션 유형이 MAPREDUCE(MapReduce)인 경우 각 항목에서 Tracking UI 열의 History를 클릭하면 위의 JobHistory server UI 페이지로 이동한다. 이미 완료된 작업의 Counters 값을 확인해야 하는 경우 등은 이 순서를 따른다.  
+좌측 Cluster 메뉴의 Node Labels를 제외한 모든 페이지에서 표로 된 Cluster Metrics와 Scheduler Metrics를 확인할 수 있다. Cluster Metrics에는 최근 처리된 어플리케이션 수와 가용 가상 코어(VCore) 및 메모리, 노드 현황 요약이 포함되며 Scheduler Metrics에는 스케쥴러 타입과 최소·최대 할당 가능 자원량이 포함된다.
 
 ![YARN ResourceManager WebApp UI Cluster Node list](/docs/images/screenshot_YARN_resource-manager_cluster_nodes.png)  
-좌측 Cluster 탭의 Nodes를 통해 현재 클러스트의 노드 리스트를 확인할 수 있다.
-
-![YARN ResourceManager WebApp UI Cluster Applications](/docs/images/screenshot_YARN_resource-manager_applications.png)  
-Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 수행 종료된 어플리케이션 목록을 확인할 수 있다. 어플리케이션 유형이 MAPREDUCE(MapReduce)인 경우 각 항목에서 Tracking UI 열의 History를 클릭하면 위의 JobHistory server UI 페이지로 이동한다. 이미 완료된 작업의 Counters 값을 확인해야 하는 경우 등은 이 순서를 따른다.
+좌측 Cluster 탭의 Nodes를 통해 현재 클러스트의 노드 리스트를 확인할 수 있다. Node Labels에서는 클러스터에 할당된 노드들을 Label명을 기준으로 묶어 분류, 확인할 수 있으나 본 문서에서는 스크린샷이 생략되어 있다.  
 
 ![YARN ResourceManager WebApp UI Cluster Applications Running](/docs/images/screenshot_YARN_resource-manager_applications_running.png)  
+현재 실행 중(RUNNING)인 어플리케이션이 있다면 RUNNING 페이지에 그 내용이 등재된다. RUNNING 페이지에는 어플리케이션의 기본 정보와 기동 중인 컨테이너(노드), 할당된 가상 코어 수와 자원량 등이 표기된다.  
+
+![YARN ResourceManager WebApp UI Cluster Applications Running ID Select](/docs/images/screenshot_YARN_resource-manager_applications_running_id.png)  
+이전 화면에서 어플리케이션 ID 링크를 클릭했다면 다음과 같은 페이지를 볼 수 있고 여기에서 Overview(어플리케이션 기본 정보와 시작 시각 및 경과 시간, 현재 상태 등), Metrics(자원 선점량 등)을 확인할 수 있다.
+
 ![YARN ResourceManager WebApp UI Cluster Applications Running Attempt](/docs/images/screenshot_YARN_resource-manager_applications_running_attempt.png)  
+역시 이전 화면에서 Attempt ID 링크를 클릭했다면 다음 화면과 같은 페이지에서 시작 시각 및 경과 시간, 작업 상태 등을 담은 어플리케이션의 정보를, 그리고 할당된 컨테이너(노드) 정보 및 리소스(호스트로의 작업 수행) 요청 내역 및 로그를 확인할 수 있다.
+
 ![YARN ResourceManager WebApp UI Cluster Applications Tracking Running](/docs/images/screenshot_YARN_resource-manager_applications_running_tracking.png)  
-현재 실행 중(RUNNING)인 어플리케이션이 있다면 RUNNING 페이지에 그 내용이 등재되며 리소스 요청 내역과 각 호스트의 로그들을 열람할 수 있고, 또한 Tracking UI가 ApplicationMaster로 표기되어 작업 진행 상황을 확인할 수 있다.
+RUNNING 페이지에 등재된 실행 중인 작업에 대해 Tracking UI 링크를 따라갔다면 다음과 같이 작업 진행 상황을 확인할 수 있다. Map 및 Reduce의 총(total), 대기(pending), 수행 중(running), 수행 완료(complete)된 수와 그 진척도를 확인할 수 있다.
 
 ![YARN ResourceManager WebApp UI Cluster Scheduler](/docs/images/screenshot_YARN_resource-manager_scheduler.png)  
-Scheduler에서는 스케쥴러 내부 상태와 그에 할당된 자원 등을 표시하여 준다.
+Scheduler 메뉴에서는 최근에 수행한 스케쥴링 내역을 보여준다. 현재 실행 중인 작업이 있다면 해당 작업에 대한 정보, 스케쥴러 내부 상태와 작업에 할당된 자원량 등을 표시하여 준다.
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
 Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 현재 설정 값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 diff의 적용 결과를 보았을 때 내용이 완전히 동일하지는 않고 미세한 차이가 있다. 주된 차이가 발생한 항목들은 YARN과 밀접한 설정은 ResourceManager에서, YARN보다 Hadoop과 밀접한 설정에서는 JobHistory에서 각 property의 source가 programatically로 되어있다는 점이다. 또한 같은 property value를 갖게 되나 두 daemon 사이에 property name을 달리 사용하는 경우에 대해서도 차이가 발생한다.
