@@ -4,7 +4,6 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.mortbay.log.Log;
 
 import java.io.IOException;
 
