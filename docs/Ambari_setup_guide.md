@@ -1,4 +1,4 @@
-# Apache Ambari 설치 가이드
+# Apache Ambari 설치 및 사용 가이드
 
 ## 순서
 
@@ -240,4 +240,4 @@ Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 �
 Scheduler에서는 스케쥴러 내부 상태와 그에 할당된 자원 등을 표시하여 준다.
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
-Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 내용이 완전히 동일하지는 않고 미세한 차이가 있다.
+Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 diff의 적용 결과를 보았을 때 내용이 완전히 동일하지는 않고 미세한 차이가 있다. 주된 차이가 발생한 항목들은 YARN과 밀접한 설정은 ResourceManager에서, YARN보다 Hadoop과 밀접한 설정에서는 JobHistory에서 각 property의 source가 programatically로 되어있다는 점이다. 또한 같은 property value를 갖게 되나 두 daemon 사이에 property name을 달리 사용하는 경우에 대해서도 차이가 발생한다.
