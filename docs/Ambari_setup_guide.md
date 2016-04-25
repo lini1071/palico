@@ -229,9 +229,15 @@ Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce,
 좌측 Cluster 탭의 Nodes를 통해 Node 리스트를 확인할 수 있다.
 
 ![YARN ResourceManager WebApp UI Cluster Applications](/docs/images/screenshot_YARN_resource-manager_applications.png)  
-Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 수행 종료된 어플리케이션 목록을 확인할 수 있다. 어플리케이션 유형이 MAPREDUCE(MapReduce)인 경우 각 항목에서 Tracking UI 열의 History를 클릭하면 위의 JobHistory server UI 페이지로 이동한다.
+Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 수행 종료된 어플리케이션 목록을 확인할 수 있다. 어플리케이션 유형이 MAPREDUCE(MapReduce)인 경우 각 항목에서 Tracking UI 열의 History를 클릭하면 위의 JobHistory server UI 페이지로 이동한다. 이미 완료된 작업의 Counters 값을 확인해야 하는 경우 등은 이 순서를 따른다.
 
+![YARN ResourceManager WebApp UI Cluster Applications Running](/docs/images/screenshot_YARN_resource-manager_applications_running.png)  
+![YARN ResourceManager WebApp UI Cluster Applications Running Attempt](/docs/images/screenshot_YARN_resource-manager_applications_running_attempt.png)  
+![YARN ResourceManager WebApp UI Cluster Applications Tracking Running](/docs/images/screenshot_YARN_resource-manager_applications_running_tracking.png)  
+현재 실행 중(RUNNING)인 어플리케이션이 있다면 RUNNING 페이지에 그 내용이 등재되며 리소스 요청 내역과 각 호스트의 로그들을 열람할 수 있고, 또한 Tracking UI가 ApplicationMaster로 표기되어 작업 진행 상황을 확인할 수 있다.
 
+![YARN ResourceManager WebApp UI Cluster Scheduler](/docs/images/screenshot_YARN_resource-manager_scheduler.png)  
+Scheduler에서는 스케쥴러 내부 상태를 표시하여 준다.
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
 Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 내용이 완전히 동일하지는 않고 미세한 차이가 있다.
