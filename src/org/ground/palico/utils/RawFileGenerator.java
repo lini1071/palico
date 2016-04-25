@@ -14,11 +14,15 @@ public class RawFileGenerator {
         try {
             long tStart, tEnd;
             tStart = System.currentTimeMillis();
+            /*
             if (args.length == 3) {
                 GenerateFile(args[0], Long.parseLong(args[1]), Float.parseFloat(args[2]));
             } else if (args.length == 4) {
                 GenerateFile(args[0], Long.parseLong(args[1]), Long.parseLong(args[2]), Float.parseFloat(args[3]));
             }
+            */
+            ValidateFile(args[0]);
+            
             tEnd = System.currentTimeMillis();
             System.out.println("Generated file " + args[0] + "\nElapsed time : " + (tEnd - tStart) + "ms");
         } catch (NumberFormatException e) {
@@ -64,18 +68,26 @@ public class RawFileGenerator {
      * @param file - name of target file
      * @param    value - value you want to confirm
      */
-    private static void ValidateFile(String file, float value) throws IOException {
+    private static void ValidateFile(String file) throws IOException {
         FileInputStream fStream = new FileInputStream(file);
         BufferedInputStream bStream = new BufferedInputStream(fStream);
         DataInputStream dStream = new DataInputStream(bStream);
 
         long numOfElements = 0;
+        float fl;
         while (0 < dStream.available()) {
+        	/*
             if (dStream.readFloat() != value) {
                 break;
             } else {
                 numOfElements += 1;
             }
+            */
+        	fl = numOfElements;
+        	for (int i = 0 ; i < 9 ; i++) fl /= 0.999f;
+        	System.out.printf("%ld %f %f\n", numOfElements, dStream.readFloat(), fl);
+        	
+        	numOfElements += 1;
         }
         System.out.println("Value of all data is correct. Number of elements : " + numOfElements);
         dStream.close();
