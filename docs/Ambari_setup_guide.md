@@ -186,7 +186,10 @@ Ambari Server Web UI는 각 구성요소마다 나뉘어진 모니터링 기능�
 HDFS, MapReduce, YARN, 그리고 Spark의 경우는 위와 같이 Quick Links라는 메뉴가 추가되어 이를 통해 각 서비스를 관리하는 node의 Web Application 서버로 접속할 수 있게 해준다. HDFS의 Quick Links는 DFS의 관리를 담당하는 NameNode UI로 연결되어 이 부분에 대한 중요도는 다소 낮다. Application의 시작 및 종료 그리고 작업 내역은 MapReduce와 YARN의 Quick Links를 통해 각각 JobHistory, ResourceManager 서버로 접속하여 확인할 수 있다.
 
 #### 3. More informations
-본 단락에서는 5.2에서 Quick Links를 통하여 HDFS, MapReduce, YARN의 UI에 접속하였을 때의 내용을 기술한다.
+본 단락에서는 5.2에서 Quick Links를 통하여 HDFS, MapReduce, YARN의 UI에 접속하였을 때의 내용을 기술한다. 단, Quick Links를 통하여 확인할 수 있는 각 서비스의 logs, JMX, Thread stacks에 대한 내용은 기술하지 않는다.
+
+##### HDFS NameNode
+
 ![Hadoop NameNode WebApp UI Overview](/docs/images/screenshot_HDFS_namenode_webapp_overview.png)  
 Services의 HDFS 탭에서 NameNode UI를 선택했을 때는 다음과 같은 WebAPP UI를 확인할 수 있다. Summary에 DFS의 상황이 요약되어 있다.
 
@@ -196,18 +199,32 @@ Services의 HDFS 탭에서 NameNode UI를 선택했을 때는 다음과 같은 W
 ![Hadoop NameNode WebApp UI FileSystem Explorer](/docs/images/screenshot_HDFS_namenode_webapp_fs-explorer.png)  
 Utilities 탭의 Browse the file system을 선택하면 다음과 같이 Web UI에서 DFS 안의 파일들을 탐색할 수 있다. 파일 내용들을 바로 확인할 수는 없지만 각 파일을 다운로드할 수 있어서 이후 확인이 가능하다.
 
+##### MapReduce2 JobHistory
+
 ![MapReduce2 JobHistory WebApp UI Main](/docs/images/screenshot_MapReduce_jobhistory_main.png)  
 MapReduce2의 Quick Links에서 JobHistory UI를 선택했을 때의 Web UI 화면이다. 이 기본 화면의 출력은 좌측 Application 탭의 Jobs를 선택한 경우와 동일하다. About은 build version과 JobHistory server daemon 시작 시간만을 출력해주기 때문에 스크린샷을 통한 추가 설명을 생략한다.
+
+![MapReduce2 JobHistory WebApp UI Job overview](/docs/images/screenshot_MapReduce_jobhistory_job.png)  
+수행된 job 목록 중 하나를 택했을 경우 다음과 같은 Job overview 화면을 볼 수 있다. 여기서 Node의 링크를 클릭했을 때는 DataNode WebApp UI로 이동하게 되며 node에 관한 간략한 내용을 보여준다. Task type과 Attempt Type을 Map과 Reduce의 둘로 나누어 두었으며, attempt의 경우는 failed, killed, successful의 세 가지 경우로 확인할 수 있다. Map과 Reduce의 Task type으로 나눈 작업 내역은 좌측에 새로 생긴 Job 탭을 통해서도 확인할 수 있다(같은 페이지로 링크되어 있음).
+
+![MapReduce2 JobHistory WebApp UI Job Counters](/docs/images/screenshot_MapReduce_jobhistory_job_counters.png)  
+좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.
+
+![MapReduce2 JobHistory WebApp UI Job Configs](/docs/images/screenshot_MapReduce_jobhistory_job_conf.png)  
+해당 job을 수행했을 당시의 설정 값들을 확인할 수 있다. 
+
+![MapReduce2 JobHistory WebApp UI Job Map Tasks](/docs/images/screenshot_MapReduce_jobhistory_job_map-tasks.png)  
+다음은 클러스터에서 실행한 job들 중 하나를 골라 그 map task들을 확인한 내역이다. 각 map task 항목을 클릭하면 해당 task가 수행된 node와 저장된 log
+
 
 ![MapReduce2 JobHistory WebApp UI Config](/docs/images/screenshot_MapReduce_jobhistory_conf.png)  
 Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 설정값을 xml 형태로 표시해준다.
 
-![MapReduce2 JobHistory WebApp UI Local logs](/docs/images/screenshot_MapReduce_jobhistory_local-logs.png) 
+
+##### YARN ResourceManager
+
+![YARN ResourceManager WebApp UI Screenshot](/docs/images/screenshot_YARN_resource-manager.png)  
 
 
-![MapReduce2 JobHistory WebApp UI Server stacks](/docs/images/screenshot_MapReduce_jobhistory_server-stacks.png) 
-
-![MapReduce2 JobHistory WebApp UI Server metrics](/docs/images/screenshot_MapReduce_jobhistory_server-metrics.png) 
-
-![YARN ResourceManager Screenshot](/docs/images/screenshot_YARN_resource_manager_.png)  
-
+![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
+Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 내용이 완전히 동일하지는 않고 미세한 차이가 있다.
