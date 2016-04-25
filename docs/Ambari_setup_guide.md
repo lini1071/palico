@@ -225,7 +225,7 @@ Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 mapreduce,
 ![YARN ResourceManager WebApp UI Screenshot](/docs/images/screenshot_YARN_resource-manager.png)  
 다음은 Services의 YARN 탭에서 ResourceManager UI를 선택했을 때의 WebAPP UI 메인 페이지 화면을 스크린샷으로 저장한 것이다.
 
-![YARN ResourceManager WebApp UI Cluster Node list](/docs/images/screenshot_YARN_resource-manager_nodes.png)  
+![YARN ResourceManager WebApp UI Cluster Node list](/docs/images/screenshot_YARN_resource-manager_cluster_nodes.png)  
 좌측 Cluster 탭의 Nodes를 통해 Node 리스트를 확인할 수 있다.
 
 ![YARN ResourceManager WebApp UI Cluster Applications](/docs/images/screenshot_YARN_resource-manager_applications.png)  
