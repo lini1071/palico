@@ -208,16 +208,17 @@ MapReduce2의 Quick Links에서 JobHistory UI를 선택했을 때의 Web UI 화�
 수행된 job 목록 중 하나를 택했을 경우 다음과 같은 Job overview 화면을 볼 수 있다. 여기서 Node의 링크를 클릭했을 때는 DataNode WebApp UI로 이동하게 되며 node에 관한 간략한 내용을 보여준다. Task type과 Attempt Type을 Map과 Reduce의 둘로 나누어 두었으며, attempt의 경우는 failed, killed, successful의 세 가지 경우로 확인할 수 있다. Map과 Reduce의 Task type으로 나눈 작업 내역은 좌측에 새로 생긴 Job 탭을 통해서도 확인할 수 있다(같은 페이지로 링크되어 있음).
 
 ![MapReduce2 JobHistory WebApp UI Job Counters](/docs/images/screenshot_MapReduce_jobhistory_job_counters.png)  
-좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.
+좌측 Job 탭의 Counters를 선택하면 다음과 같이 해당 job의 수행 결과 저장된 Counter 값들을 표시하여 준다. Name의 각 항목들을 클릭하면 (m|r)_(4d)의 형태로 작업 유형과 task 번호마다에 대한 값을 추가적으로 확인할 수 있다.  
+MapReduce에서 정의하는 기본 Counter들의 목록은 스크린샷의 내용과 같으며, JobHistory server에서 확인할 수 있는 Counter들의 값은 스크린샷과 같이 5가지로 나눌 수 있다. File System Counters 항목은 주로 HDFS에서 요청된 I/O Operation 수와 그 데이터 크기를 저장한다. Job Counters 항목은 map/reduce task 수와 task에 걸린 시간을 저장하며, Map-Reduce Framework 항목에는 CPU 사용시간, GC 호출 시간, I/O 레코드 수 및 힙·스냅샷 크기 등의 Counter들이 저장된다. 나머지 두 개 중 하나는 File Input Format Counter ; 읽은(read) 바이트 크기, 또 하나는 File Output Format Counter ; 쓴(write) 바이트 크기를 저장한다. 
 
 ![MapReduce2 JobHistory WebApp UI Job Configs](/docs/images/screenshot_MapReduce_jobhistory_job_conf.png)  
-Job의 Configuration을 선택하면 해당 job을 수행했을 당시의 설정 값들을 확인할 수 있다. 
+Job의 Configuration을 선택하면 해당 job을 수행했을 당시의 설정(config) 값들을 확인할 수 있다. 
 
 ![MapReduce2 JobHistory WebApp UI Job Map Tasks](/docs/images/screenshot_MapReduce_jobhistory_job_map-tasks.png)  
 다음은 클러스터에서 실행한 job들 중 하나를 골라 그 map task들을 확인한 내역이다. 작업의 수행 여부와 시작 및 종료 시각, 수행 시간을 확인할 수 있으며 각 map task 항목을 클릭하면 해당 task가 수행된 node와 저장된 log 내역을 추가적으로 확인할 수 있다.
 
 ![MapReduce2 JobHistory WebApp UI Config](/docs/images/screenshot_MapReduce_jobhistory_conf.png)  
-Tools 탭의 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 설정값을 xml 형태로 표시해준다.
+Tools 탭의 Configuration을 선택했을 때는 다음과 같이 mapreduce, mapred에 관련된 현재 설정 값을 xml 형태로 표시해준다.
 
 
 ##### YARN ResourceManager
@@ -240,4 +241,4 @@ Applications 메뉴에서는 수행 대기 중이거나 수행 중인, 또는 �
 Scheduler에서는 스케쥴러 내부 상태와 그에 할당된 자원 등을 표시하여 준다.
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
-Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 설정값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 diff의 적용 결과를 보았을 때 내용이 완전히 동일하지는 않고 미세한 차이가 있다. 주된 차이가 발생한 항목들은 YARN과 밀접한 설정은 ResourceManager에서, YARN보다 Hadoop과 밀접한 설정에서는 JobHistory에서 각 property의 source가 programatically로 되어있다는 점이다. 또한 같은 property value를 갖게 되나 두 daemon 사이에 property name을 달리 사용하는 경우에 대해서도 차이가 발생한다.
+Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 현재 설정 값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 diff의 적용 결과를 보았을 때 내용이 완전히 동일하지는 않고 미세한 차이가 있다. 주된 차이가 발생한 항목들은 YARN과 밀접한 설정은 ResourceManager에서, YARN보다 Hadoop과 밀접한 설정에서는 JobHistory에서 각 property의 source가 programatically로 되어있다는 점이다. 또한 같은 property value를 갖게 되나 두 daemon 사이에 property name을 달리 사용하는 경우에 대해서도 차이가 발생한다.
