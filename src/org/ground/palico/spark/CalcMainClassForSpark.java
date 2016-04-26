@@ -12,9 +12,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.input.FixedLengthBinaryInputFormat;
 
-import scala.Tuple2;
-import scala.collection.Iterator;
-
 public class CalcMainClassForSpark {
 	
 	private static final float SAMPLE_VALUE = 0.999f;
@@ -62,24 +59,24 @@ public class CalcMainClassForSpark {
 			LongWritable.class, FloatWritable.class, FixedLengthRecordOutputFormat.class);
 		*/
 		
-        JavaPairRDD<LongWritable, FixedLengthRecordBlock> orgData = 
+        JavaPairRDD<LongWritable, FloatWritable> orgData = 
         		context.newAPIHadoopFile(inStr, FixedLengthRecordBlockInputFormat.class,
-        		LongWritable.class, FixedLengthRecordBlock.class, hConf);
+        			LongWritable.class, FixedLengthRecordBlock.class, hConf);
 
 		JavaPairRDD<LongWritable, FloatWritable> flData =
-        		orgData.mapValues(new Function<BytesWritable, FloatWritable>()
+        		orgData.mapValues(new Function<FixedLengthRecordBlock, FloatWritable>()
         		{
-        			public FloatWritable call(BytesWritable b)
+        			public FloatWritable call(FixedLengthRecordBlock b)
         			{
 						// Includes calculating sequence. It may be very costful.
-						float res = ByteBuffer.wrap(b.getBytes()).asFloatBuffer().get();
+						float res = b.getBufferLength();
 						for (int i = 0 ; i < COMPLEXITY_CAL ; i++) res /= SAMPLE_VALUE;
 						return new FloatWritable(res);
         			}
         		});
 
 		flData.saveAsNewAPIHadoopFile(outStr,
-			LongWritable.class, FloatWritable.class, FixedLengthRecordOutputFormat.class);
+			LongWritable.class, FixedLengthRecordBlock.class, FixedLengthRecordBlockOutputFormat.class);
         
         // Calculate performance time
         long tEnd = System.currentTimeMillis();
