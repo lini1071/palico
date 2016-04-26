@@ -22,7 +22,6 @@ public class Lv2GeneratorTest {
         System.out.println(chlGenerator.getModeName() + " mode spend time : " + elapsed);
     }
 
-
     @Test
     public void testRawPerformanceByGPU() throws IOException {
         CHLRawGenerator chlGenerator = new CHLRawGenerator("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);

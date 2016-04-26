@@ -1,12 +1,10 @@
 package org.ground.palico.lv2Generator;
 
 import com.amd.aparapi.Kernel;
-import com.amd.aparapi.Range;
-import com.amd.aparapi.device.Device;
+import com.sun.tools.corba.se.idl.SequenceEntry;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
@@ -37,6 +35,8 @@ public class CHLRawGenerator {
     }
 
     public void perform() throws IOException {
+        AparapiMode am = new AparapiMode();
+        SequentialMode sm = new SequentialMode();
         ByteBuffer readBuffer = ByteBuffer.allocate(MAXAVAILABLEMEM);
         try {
             FileChannel inputChannel = FileChannel.open(Paths.get(srcFile), StandardOpenOption.READ);
@@ -59,9 +59,9 @@ public class CHLRawGenerator {
                 //알고리즘 수행 후 결과 값 output 배열에 저장
                 float[] output;
                 if (getModeName().equals("GPU") || getModeName().equals("JTP")) {
-                    output = performByAparapi(band);
+                    output = am.performByAparapi(band, bandSize, mode);
                 } else {
-                    output = performBySequential(band, bandSize);
+                    output = sm.performBySequential(band, bandSize);
                 }
 
                 //float[] -> floatBuffer -> byte[] -> ByteBuffer
@@ -86,63 +86,5 @@ public class CHLRawGenerator {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-
-    public float[] perform(float[] band) {
-        return band;
-    }
-
-    public float[] performBySequential(float[] band, int bandSize) {
-        float c0 = -0.0929f;
-        float c1 = 0.2974f;
-        float c2 = -2.2429f;
-        float c3 = 0.8358f;
-        float c4 = -0.0077f;
-
-        float[] result = new float[bandSize];
-        for (int i = 0; i < bandSize; i++) {
-            if (band[i] == 0.0f) {
-                result[i] = 0.0f;
-            } else {
-                float r1 = (float) Math.log10(band[i] / band[i]);
-                float r2 = r1 * r1;
-                float r3 = r2 * r1;
-                result[i] = (float) (c0 + Math.pow(10, c1 + c2 * r1 + c3 * r2 + c4 * r3));
-            }
-        }
-        return result;
-    }
-
-    public float[] performByAparapi(float[] band) {
-        float c0 = -0.0929f;
-        float c1 = 0.2974f;
-        float c2 = -2.2429f;
-        float c3 = 0.8358f;
-        float c4 = -0.0077f;
-        float[] result = new float[MAXAVAILABLEMEM];
-        Kernel kernel = new Kernel() {
-            @Override
-            public void run() {
-                int gid = getGlobalId();
-
-                if (band[gid] == 0.0 || band[gid] == 0.0) {
-                    result[gid] = 0.0f;
-                } else {
-                    float r1 = log(band[gid] / band[gid]) / log(10);
-                    float r2 = r1 * r1;
-                    float r3 = r2 * r1;
-                    result[gid] = c0 + pow(10, c1 + c2 * r1 + c3 * r2 + c4 * r3);
-                }
-            }
-        };
-        Device device = Device.firstGPU();
-        Range range = device.createRange(MAXAVAILABLEMEM);
-
-        kernel.setExecutionMode(mode);
-        kernel.execute(range);
-        kernel.dispose();
-
-        return result;
     }
 }
