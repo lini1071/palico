@@ -1,7 +1,6 @@
 package org.ground.palico.lv2Generator;
 
 import com.amd.aparapi.Kernel;
-import com.sun.tools.corba.se.idl.SequenceEntry;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,7 +14,7 @@ public class CHLRawGenerator {
     String modeName;
     String srcFile;
     String defFile;
-    private static final int MAXAVAILABLEMEM = 1024 * 1024 * 128;   // 128MB
+    private static final int MAXAVAILABLEMEM = 1024 * 1024 * 512;   // 512MB
 
     public CHLRawGenerator(String srcFile, String defFile, Kernel.EXECUTION_MODE mode) {
         this.srcFile = srcFile;

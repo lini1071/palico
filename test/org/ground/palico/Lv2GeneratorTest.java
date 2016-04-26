@@ -7,13 +7,19 @@ import org.ground.palico.hdf.TestPlan;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import static junit.framework.Assert.assertEquals;
 
 public class Lv2GeneratorTest {
     private static final int ELAPSED_TIME_UNIT = 1000;  // milli seconds
 
-    private void perform(CHLRawGenerator chlGenerator) throws IOException {
+    private void perform(String srcFile, String defFile, Kernel.EXECUTION_MODE mode) throws IOException {
+        CHLRawGenerator chlGenerator = new CHLRawGenerator(srcFile, defFile, mode);
         final long start = System.currentTimeMillis();
         chlGenerator.perform();
         final long end = System.currentTimeMillis();
@@ -22,22 +28,55 @@ public class Lv2GeneratorTest {
         System.out.println(chlGenerator.getModeName() + " mode spend time : " + elapsed);
     }
 
+    private void testRawCalculation(String outputFile) {
+        float expected = 1.8904529f;
+        int maxAvailableMem = 1024 * 1024 * 512;
+        ByteBuffer readBuffer = ByteBuffer.allocate(maxAvailableMem);
+        try {
+            FileChannel fileChannel = FileChannel.open(Paths.get(outputFile), StandardOpenOption.READ);
+            while (fileChannel.read(readBuffer) > 0) {
+                byte[] byteArray = readBuffer.array();
+                FloatBuffer floatBuffer = ByteBuffer.wrap(byteArray).asFloatBuffer();
+
+                float band[] = new float[readBuffer.capacity() / Float.BYTES];
+                int bandSize = band.length;
+
+                floatBuffer.get(band);
+                for (int i = 0; i < bandSize; i++) {
+                    assertEquals(expected, band[i]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Test
     public void testRawPerformanceByGPU() throws IOException {
-        CHLRawGenerator chlGenerator = new CHLRawGenerator("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);
-        perform(chlGenerator);
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);
+        testRawCalculation("data/output.raw");
     }
 
     @Test
     public void testRawPerformanceBySEQ() throws IOException {
-        CHLRawGenerator chlGenerator = new CHLRawGenerator("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.SEQ);
-        perform(chlGenerator);
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.SEQ);
+        testRawCalculation("data/output.raw");
     }
 
     @Test
     public void testRawPerformanceByJTP() throws IOException {
-        CHLRawGenerator chlGenerator = new CHLRawGenerator("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.JTP);
-        perform(chlGenerator);
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.JTP);
+        testRawCalculation("data/output.raw");
+    }
+
+    @Test
+    public void testAll() throws IOException {
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);
+        testRawCalculation("data/output.raw");
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.SEQ);
+        testRawCalculation("data/output.raw");
+        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.JTP);
+        testRawCalculation("data/output.raw");
     }
 
     @Test
