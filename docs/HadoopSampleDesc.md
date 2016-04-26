@@ -13,6 +13,10 @@
 #### 1. 개요 ####
 
 이 문서는 MapReduce 샘플 코드를 작성하면서 Apache Hadoop MapReduce 2.x 버전에서 Mapper의 구동을 위해 조사하고 작성했던 것들을 요약한 내용이다. 이 글은 내용들을 정리하고 기억하여 차후에 응용 수준을 높일 수 있게끔 하고자 하는 것을 주 목적으로 작성되었다. 한편으로는 MapReduce의 구성 요소의 관계에 대해 조금이나마 이해를 돕기 위한 보조 자료의 측면도 가질 수 있게끔 하려 했다.
+
+![Hadoop MapReduce Concept Image](http://xiaochongzhang.me/blog/wp-content/uploads/2013/05/MapReduce_Work_Structure.png)
+
+
 본 개요 부분 이후 Job Configuration과 기타를 제외하고 샘플 코드에서 구현한 사항은 클래스 각각에 대한 내용을 설명하고 있다. 데이터를 텍스트로 저장하고자 하는 경우는 대부분 Hadoop에서 미리 정의된 클래스들을 이용하여 처리가 가능하나, 이진 바이너리에 대한 처리를 사용자가 별도의 구성을 통해 구현하고자 하는 경우 Input/OutputFormat과 RecordReader/Writer 등을 정의해줄 필요가 있다. 본 문서에서는 수동으로 정의한 항목의 설명 대신 상위 클래스가 요구하는 기본 사항을 주로 기술하였다. 이번 샘플 코드에서는 Mapper만을 이용하므로 Reducer는 제외한다.
 
 
