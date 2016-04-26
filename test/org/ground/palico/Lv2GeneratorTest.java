@@ -53,30 +53,30 @@ public class Lv2GeneratorTest {
     
     @Test
     public void testRawPerformanceByGPU() throws IOException {
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);
-        testRawCalculation("data/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.GPU);
+        testRawCalculation("data/Aparapi/output.raw");
     }
 
     @Test
     public void testRawPerformanceBySEQ() throws IOException {
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.SEQ);
-        testRawCalculation("data/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.SEQ);
+        testRawCalculation("data/Aparapi/output.raw");
     }
 
     @Test
     public void testRawPerformanceByJTP() throws IOException {
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.JTP);
-        testRawCalculation("data/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.JTP);
+        testRawCalculation("data/Aparapi/output.raw");
     }
 
     @Test
     public void testAll() throws IOException {
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.GPU);
-        testRawCalculation("data/output.raw");
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.SEQ);
-        testRawCalculation("data/output.raw");
-        perform("data/input.raw", "data/output.raw", Kernel.EXECUTION_MODE.JTP);
-        testRawCalculation("data/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.GPU);
+        testRawCalculation("data/Aparapi/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.SEQ);
+        testRawCalculation("data/Aparapi/output.raw");
+        perform("data/Aparapi/input.raw", "data/Aparapi/output.raw", Kernel.EXECUTION_MODE.JTP);
+        testRawCalculation("data/Aparapi/output.raw");
     }
 
     @Test
