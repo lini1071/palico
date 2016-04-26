@@ -7,18 +7,14 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
-import org.ground.palico.hadoop.FixedLengthFloatArrayWritable;
-
-public class FixedLengthRecordBlockReader<T extends Writable>
-	extends RecordReader<LongWritable, BytesWritable> {
+public class FloatRecordBlockReader extends RecordReader<LongWritable, FloatWritable> {
 
 	// File pointer position
 	private long fpStart;
@@ -27,23 +23,29 @@ public class FixedLengthRecordBlockReader<T extends Writable>
 	private FSDataInputStream iStream;
     
 	private LongWritable key = new LongWritable();
-	private FixedLengthRecordBlock<T> values;
-
+	private FloatWritable value = new FloatWritable();
+	private long keyCounter;
+	
 	// variables for file i/o operation
 	private int recordSize;
 	private int numRecords;
 	private int size_buf;
 	
+	// class-primary buffer, and wrapper variable
 	private byte[] buf;
 	private ByteBuffer wrap_buf;
 	
+	@SuppressWarnings("unused")
 	private InputSplit split;
+	
+	@SuppressWarnings("unused")
 	private TaskAttemptContext context;
 	
-	public FixedLengthRecordBlockReader(int rSize, int numRec)
+	public FloatRecordBlockReader(int rSize, int numRec)
 	{
 		this.recordSize = rSize;
 		this.numRecords = numRec;
+		this.size_buf = rSize * numRec;
 	}
 	
 	@Override
@@ -68,11 +70,15 @@ public class FixedLengthRecordBlockReader<T extends Writable>
 		// Move file pointer of the file we are accessing.
 		fpPos = fpStart;
 		if (0 < fpStart) iStream.seek(fpStart);
-		 
+		
 		// initialize inner variables
 		this.buf 		= new byte[(int) this.size_buf];
+		this.keyCounter = (this.fpStart / (long) this.recordSize);
+		
+		// initialize ByteBuffer variable
 		this.wrap_buf = ByteBuffer.wrap(this.buf);
-		this.values = new FixedLengthRecordBlock<T>(this.numRecords);
+		this.wrap_buf.asFloatBuffer().clear();
+		this.wrap_buf.position( this.wrap_buf.capacity() );
 	}
 
 	@Override
@@ -85,57 +91,48 @@ public class FixedLengthRecordBlockReader<T extends Writable>
 				", fpEnd - fpPos = " + String.valueOf(fpEnd - fpPos));
 		*/
 		
-		if (fpPos < fpEnd) {
-		byte[] ptrBuffer = null;
-		ByteBuffer bb;
-		int bufferLength;
-		
-		// set position, clear buffer and read
-		key.set(fpPos);
-		
-		if ((fpPos + size_buf) <= fpEnd) {
-			// we can read entire buffer size of data.
-			ptrBuffer 	= this.buf;
-			bb 			= this.wrap_buf;
-			
-			bufferLength = values.getLength();
-				
-			fpPos += size_buf;
-		} else {
-			// can over bound
-			int partSize = (int) (fpEnd - fpPos);
-			byte[] tmpBuffer = new byte[partSize];
-			ptrBuffer = tmpBuffer;
-			bb = ByteBuffer.wrap(ptrBuffer);
-			
-			int bLen = partSize / Float.BYTES;
-			values.setPartLength(bLen);
-			bufferLength = bLen;
-			
-			fpPos += partSize;
-			}
-			
-			wrap_buf.clear();
-			iStream.readFully(ptrBuffer);
-			for (int i = 0 ; i < bufferLength ; i++)
-			{
-				// set inner ArrayWritable values
-				values.get(i).set(bb.getFloat());
-			}
-				
+		//if (0 < wrap_buf.remaining())
+		if (wrap_buf.hasRemaining())
+		{
+			key.set(this.keyCounter++);
+			value.set(wrap_buf.getFloat());
 			return true;
+		}
+		else if (fpPos < fpEnd)
+		{
+			wrap_buf.clear();		// clearing (Byte)Buffer
+									// The limit of flipped Buffer is defined on other objects.
+
+			if ((fpPos + size_buf) <= fpEnd) {
+				// we can read entire buffer size of data.
+				fpPos += size_buf;
+			} else {
+				// can over bound
+				int partSize = (int) (fpEnd - fpPos);
+				fpPos += partSize;
+				
+				int bufLen = partSize / Float.BYTES;
+				wrap_buf.limit(bufLen);
+			}
+			
+			// block i/o processing :
+			// read(ByteBuffer) performs loading pre-defined data size only,
+			// so we must use readFully(byte[]) instead of read(ByteBuffer).
+			iStream.readFully(this.buf);
+			
+			return nextKeyValue(); 	// return true;
 		}
 		else return false;
 	}
 
 	@Override
-	public Object getCurrentKey() throws IOException, InterruptedException {
+	public LongWritable getCurrentKey() throws IOException, InterruptedException {
 		return this.key;
 	}
 
 	@Override
-	public Object getCurrentValue() throws IOException, InterruptedException {
-		return this.values;
+	public FloatWritable getCurrentValue() throws IOException, InterruptedException {
+		return this.value;
 	}
 
 	@Override
