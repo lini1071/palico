@@ -52,9 +52,13 @@ public class CalcMainClassForSpark {
 						return new FloatWritable(res);
 					}
 				});
+/*
 
 		flData.saveAsNewAPIHadoopFile(outStr,
 			LongWritable.class, FloatWritable.class, FixedLengthRecordOutputFormat.class);
+*/
+		flData.saveAsNewAPIHadoopFile(outStr,
+				LongWritable.class, FloatWritable.class, FixedLengthRecordBlockOutputFormat.class);
 		
 		// Calculate performance time
 		long tEnd = System.currentTimeMillis();
