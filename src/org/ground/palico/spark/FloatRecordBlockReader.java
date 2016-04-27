@@ -103,22 +103,24 @@ public class FloatRecordBlockReader extends RecordReader<LongWritable, FloatWrit
 			wrap_buf.clear();		// clearing (Byte)Buffer
 									// The limit of flipped Buffer is defined on other objects.
 
+			int readSize;
 			if ((fpPos + size_buf) <= fpEnd) {
 				// we can read entire buffer size of data.
 				fpPos += size_buf;
+				readSize = size_buf;
 			} else {
 				// can over bound
 				int partSize = (int) (fpEnd - fpPos);
 				fpPos += partSize;
 				
-				int bufLen = partSize / Float.BYTES;
-				wrap_buf.limit(bufLen);
+				readSize = partSize;
+				wrap_buf.limit(partSize);	// unit size is byte.
 			}
 			
 			// block i/o processing :
-			// read(ByteBuffer) performs loading pre-defined data size only,
-			// so we must use readFully(byte[]) instead of read(ByteBuffer).
-			iStream.readFully(this.buf);
+			// read(ByteBuffer) & read(byte[]) performs loading pre-defined data size only.
+			// so we must use readFully(byte[]) instead of read(ByteBuffer) & read(byte[]).
+			iStream.readFully(buf, 0, readSize);
 			
 			return nextKeyValue(); 	// return true;
 		}
