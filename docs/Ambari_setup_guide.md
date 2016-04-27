@@ -20,6 +20,7 @@
   1. Submitting Application (jar)
   2. Monitoring services
   3. More information
+6. 기타
 
 ### 1. 개요
 
@@ -247,3 +248,15 @@ Scheduler 메뉴에서는 최근에 수행한 스케쥴링 내역을 보여준�
 
 ![YARN ResourceManager WebApp UI Config](/docs/images/screenshot_YARN_resource-manager_conf.png)  
 Tools 탭에서 Configuration을 선택했을 때는 다음과 같이 ResourceManager에 관련된 현재 설정 값을 xml 형태로 표시해준다. JobHistory의 것과 비슷하나 diff의 적용 결과를 보았을 때 내용이 완전히 동일하지는 않고 미세한 차이가 있다. 주된 차이가 발생한 항목들은 YARN과 밀접한 설정은 ResourceManager에서, YARN보다 Hadoop과 밀접한 설정에서는 JobHistory에서 각 property의 source가 programatically로 되어있다는 점이다. 또한 같은 property value를 갖게 되나 두 daemon 사이에 property name을 달리 사용하는 경우에 대해서도 차이가 발생한다.
+
+### 6. 기타
+
+Hive Metastore와 Hiveserver2가 UnicodeDecodeError 오류('ascii' codec can't decode byte ...)로 실행되지 않을 때는 다음과 
+같이 조치한 후 재시도해본다.
+
+/var/lib/ambari-agent/cache/common-services/HIVE/<version>/package/scripts 폴더의 hive_server.py와 hive_metastore.py 파일을 열어 스크립트의 시작 부분에 다음 내용을 추가한다.
+```python
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf-8')
+```
