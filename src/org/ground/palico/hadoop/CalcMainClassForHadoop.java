@@ -3,6 +3,7 @@ package org.ground.palico.hadoop;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.mortbay.log.Log;
@@ -19,6 +20,7 @@ public class CalcMainClassForHadoop {
 		FileSystem fs = path.getFileSystem(conf);
 		long blockSize = fs.getFileStatus(path).getBlockSize(); 
 		
+		conf.setInt("CONF_RECORD_SIZE_BLOCK", Float.BYTES);
 		if (blockSize < (long) preferSize)
 		{
 			Log.warn("Block size error : Block size " + blockSize + " is smaller than "
@@ -34,14 +36,20 @@ public class CalcMainClassForHadoop {
 		job.setMapperClass(CalculatorMapper.class);
 		job.setNumReduceTasks(0);
 		
+		/*
 		job.setInputFormatClass(FloatRecordInputFormat.class);
 		job.setOutputFormatClass(FloatRecordOutputFormat.class);
 		FloatRecordInputFormat.addInputPath(job, new Path(args[1]));
 		FloatRecordOutputFormat.setOutputPath(job, new Path(args[2]));
 		FloatRecordOutputFormat.setCompressOutput(job, false);
+		*/
+		job.setInputFormatClass(org.ground.palico.spark.FloatRecordBlockInputFormat.class);
+		job.setOutputFormatClass(org.ground.palico.spark.FixedLengthRecordBlockOutputFormat.class);
+		org.ground.palico.spark.FloatRecordBlockInputFormat.addInputPath(job, new Path(args[1]));
+		org.ground.palico.spark.FixedLengthRecordBlockOutputFormat.setOutputPath(job, new Path(args[2]));
 		
 		job.setMapOutputKeyClass(LongWritable.class);
-		job.setMapOutputValueClass(FixedLengthFloatArrayWritable.class);
+		job.setMapOutputValueClass(FloatWritable.class);
 		
 		// Pin start time. Submit the job and wait for completion
 		long tStart = System.currentTimeMillis();
