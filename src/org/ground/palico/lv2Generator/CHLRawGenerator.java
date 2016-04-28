@@ -82,6 +82,7 @@ public class CHLRawGenerator {
                 System.out.printf(buf.capacity() + " obSize : %d outputChannel: %d inputChannel: %d\n", obSize, outputChannel.position(), inputChannel.position());
                 readBuffer.clear();
             }
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
