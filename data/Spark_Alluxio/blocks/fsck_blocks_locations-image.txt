@@ -1,0 +1,27 @@
+FSCK started by gsd (auth:SIMPLE) from /192.168.100.6 for path /medium.img at Thu Apr 28 19:49:31 KST 2016
+/medium.img 1073741824 bytes, 4 block(s):  OK
+0. BP-311690278-127.0.1.1-1460710562731:blk_1073741940_1116 len=268435456 repl=1 [DatanodeInfoWithStorage[192.168.100.5:50010,DS-3740d056-768e-4017-82b5-02b144264f03,DISK]]
+1. BP-311690278-127.0.1.1-1460710562731:blk_1073741941_1117 len=268435456 repl=1 [DatanodeInfoWithStorage[192.168.100.6:50010,DS-8b5cf3b3-5b8e-4849-b28c-ee9d74328e37,DISK]]
+2. BP-311690278-127.0.1.1-1460710562731:blk_1073741942_1118 len=268435456 repl=1 [DatanodeInfoWithStorage[192.168.100.6:50010,DS-8b5cf3b3-5b8e-4849-b28c-ee9d74328e37,DISK]]
+3. BP-311690278-127.0.1.1-1460710562731:blk_1073741943_1119 len=268435456 repl=1 [DatanodeInfoWithStorage[192.168.100.5:50010,DS-3740d056-768e-4017-82b5-02b144264f03,DISK]]
+
+Status: HEALTHY
+ Total size:	1073741824 B
+ Total dirs:	0
+ Total files:	1
+ Total symlinks:		0
+ Total blocks (validated):	4 (avg. block size 268435456 B)
+ Minimally replicated blocks:	4 (100.0 %)
+ Over-replicated blocks:	0 (0.0 %)
+ Under-replicated blocks:	0 (0.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	1
+ Average block replication:	1.0
+ Corrupt blocks:		0
+ Missing replicas:		0 (0.0 %)
+ Number of data-nodes:		2
+ Number of racks:		1
+FSCK ended at Thu Apr 28 19:49:31 KST 2016 in 1 milliseconds
+
+
+The filesystem under path '/medium.img' is HEALTHY
