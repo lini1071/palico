@@ -17,8 +17,7 @@ public class FixedLengthRecordBlockOutputFormat<K, V extends Writable> extends F
 	public RecordWriter<K, V>
 	getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
 		Configuration conf = context.getConfiguration();
-		int recordSize = conf.getInt("CONF_RECORD_SIZE_BLOCK", 1);
-		int numRecords = conf.getInt("CONF_NUM_RECORDS_BLOCK", 1);
+		int blockSize = conf.getInt("CONF_BLOCK_SIZE", 1);
 		
 		String extension = "";
 		Path file = getDefaultWorkFile(context, extension);
@@ -26,7 +25,7 @@ public class FixedLengthRecordBlockOutputFormat<K, V extends Writable> extends F
 		FSDataOutputStream fileOut = fs.create(file, false);
 
 		return (RecordWriter<K, V>)
-			new FixedLengthRecordBlockWriter<K, V>(fileOut, recordSize * numRecords);
+			new FixedLengthRecordBlockWriter<K, V>(fileOut, blockSize);
 	}
 
 }

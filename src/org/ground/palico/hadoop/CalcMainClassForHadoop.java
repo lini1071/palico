@@ -1,17 +1,18 @@
 package org.ground.palico.hadoop;
 
+import org.ground.palico.spark.FixedLengthBytesWritable;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Job;
+
 import org.mortbay.log.Log;
 
 public class CalcMainClassForHadoop {
 	public static void main(String[] args) throws Exception {
-		int numRecords = Integer.parseInt(args[0]);
-		int preferSize = numRecords * Float.BYTES;
+		int preferSize = Integer.parseInt(args[0]);
 		
 		Configuration conf = new Configuration();
 
@@ -20,14 +21,14 @@ public class CalcMainClassForHadoop {
 		FileSystem fs = path.getFileSystem(conf);
 		long blockSize = fs.getFileStatus(path).getBlockSize(); 
 		
-		conf.setInt("CONF_RECORD_SIZE_BLOCK", Float.BYTES);
+		conf.setInt("CONF_RECORD_SIZE", Float.BYTES);
 		if (blockSize < (long) preferSize)
 		{
 			Log.warn("Block size error : Block size " + blockSize + " is smaller than "
 				+ preferSize + ". Setting block size to " + blockSize + "...");
-			conf.setInt("CONF_NUM_RECORDS_BLOCK", (int) (blockSize / Float.BYTES));
+			conf.setInt("CONF_BLOCK_SIZE", (int) blockSize);
 		}
-		else conf.setInt("CONF_NUM_RECORDS_BLOCK", numRecords);
+		else conf.setInt("CONF_BLOCK_SIZE", preferSize);
 		
 		Job job = Job.getInstance(conf, "File Block Read & Calculation");
 		
@@ -43,13 +44,13 @@ public class CalcMainClassForHadoop {
 		FloatRecordOutputFormat.setOutputPath(job, new Path(args[2]));
 		FloatRecordOutputFormat.setCompressOutput(job, false);
 		*/
-		job.setInputFormatClass(org.ground.palico.spark.FloatRecordBlockInputFormat.class);
+		job.setInputFormatClass(org.ground.palico.spark.FixedLengthBytesWritableInputFormat.class);
 		job.setOutputFormatClass(org.ground.palico.spark.FixedLengthRecordBlockOutputFormat.class);
-		org.ground.palico.spark.FloatRecordBlockInputFormat.addInputPath(job, new Path(args[1]));
+		org.ground.palico.spark.FixedLengthBytesWritableInputFormat.addInputPath(job, new Path(args[1]));
 		org.ground.palico.spark.FixedLengthRecordBlockOutputFormat.setOutputPath(job, new Path(args[2]));
 		
 		job.setMapOutputKeyClass(LongWritable.class);
-		job.setMapOutputValueClass(FloatWritable.class);
+		job.setMapOutputValueClass(FixedLengthBytesWritable.class);
 		
 		// Pin start time. Submit the job and wait for completion
 		long tStart = System.currentTimeMillis();

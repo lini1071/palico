@@ -9,10 +9,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
 public class CalcMainClassForSpark {
-	
-	private static final float SAMPLE_VALUE = 0.999f;
-	private static final float COMPLEXITY_CAL = 9;
-	
+
     public static void main(String[] args) {
         try {
             SparkConf sConf = new SparkConf();
@@ -25,18 +22,18 @@ public class CalcMainClassForSpark {
     
     @SuppressWarnings("serial")
 	private static void calcFloat(SparkConf cf,
-			int numRecords, String inStr, String outStr) throws Exception {
+			int blockSize, String inStr, String outStr) throws Exception {
     	
 		long tStart = System.currentTimeMillis();
 		JavaSparkContext context = new JavaSparkContext(cf);
-		final int recordSize = Float.BYTES;	// 4bytes
 		
 		// FixedLengthBinaryInputFormat.RECORD_LENGTH_PROPERTY == 
 		// "org.apache.spark.input.FixedLengthBinaryInputFormat.recordLength"
 		Configuration hConf = context.hadoopConfiguration(); 
-		hConf.setInt("CONF_RECORD_SIZE_BLOCK", recordSize);
-		hConf.setInt("CONF_NUM_RECORDS_BLOCK", numRecords);
+		hConf.setInt("CONF_BLOCK_SIZE", blockSize);
+		hConf.setInt("CONF_RECORD_SIZE", Float.BYTES);
 
+		/*
 		JavaPairRDD<LongWritable, FloatWritable> orgData = 
 			context.newAPIHadoopFile(inStr, FloatRecordBlockInputFormat.class,
 			LongWritable.class, FloatWritable.class, hConf);
@@ -52,13 +49,30 @@ public class CalcMainClassForSpark {
 						return new FloatWritable(res);
 					}
 				});
-/*
-
-		flData.saveAsNewAPIHadoopFile(outStr,
-			LongWritable.class, FloatWritable.class, FixedLengthRecordOutputFormat.class);
-*/
+		
 		flData.saveAsNewAPIHadoopFile(outStr,
 				LongWritable.class, FloatWritable.class, FixedLengthRecordBlockOutputFormat.class);
+		*/
+		
+		JavaPairRDD<LongWritable, FixedLengthBytesWritable> orgData = 
+				context.newAPIHadoopFile(inStr, FixedLengthBytesWritableInputFormat.class,
+				LongWritable.class, FixedLengthBytesWritable.class, hConf);
+
+		JavaPairRDD<LongWritable, FixedLengthBytesWritable> flData =
+				orgData.mapValues(new Function<FixedLengthBytesWritable, FixedLengthBytesWritable>()
+				{
+					public FixedLengthBytesWritable call(FixedLengthBytesWritable pb)
+					{
+						byte[] resBytes = pb.getBytes();
+						
+						////// You must call aparapi run method in this point.
+						
+						return new FixedLengthBytesWritable(resBytes);
+					}
+				});
+		
+		flData.saveAsNewAPIHadoopFile(outStr,
+			LongWritable.class, FixedLengthBytesWritable.class, FixedLengthRecordBlockOutputFormat.class);
 		
 		// Calculate performance time
 		long tEnd = System.currentTimeMillis();

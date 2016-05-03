@@ -5,23 +5,21 @@ import java.io.IOException;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.ground.palico.spark.FixedLengthBytesWritable;
 
 public class CalculatorMapper extends
-	Mapper<LongWritable, FloatWritable, LongWritable, FloatWritable> {
-	
-	private static final float SAMPLE_VALUE = 0.999f;
-	private static final float COMPLEXITY_CAL = 9;
+	Mapper<LongWritable, FixedLengthBytesWritable, LongWritable, FixedLengthBytesWritable> {
 	
 	// map function implementing
 	@Override
-	public void map(LongWritable key, FloatWritable value, Context context) throws IOException, InterruptedException {
+	public void map(LongWritable key, FixedLengthBytesWritable value, Context context) throws IOException, InterruptedException {
 	
-		float f = value.get();
+		// You must implement method getting byte array and proceeding 'run'. 
+		byte[] b = value.getBytes();
 
-		// do calculating
-		for (int j = 0 ; j < COMPLEXITY_CAL ; j++) f /= SAMPLE_VALUE;
+		////// Do calling run method!
 		
 		// write key-value pair to the split
-		context.write(key, new FloatWritable(f));
+		context.write(key, new FixedLengthBytesWritable(b));
 	}
 }
