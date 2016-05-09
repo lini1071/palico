@@ -20,7 +20,7 @@ class BenchmarkSuite {
     }
 
     public void perform() throws Exception {
-        String fileName = "data/performance_result.csv";
+        String fileName = "data/Aparapi/performance_result.csv";
         CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
         for(int pixelCount = MIN_PIXEL_COUNT; pixelCount < MAX_PIXEL_COUNT; pixelCount++) {
             ComplexityInputData inputData = new ComplexityInputData(pixelCount);
