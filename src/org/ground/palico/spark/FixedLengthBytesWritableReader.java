@@ -23,10 +23,12 @@ public class FixedLengthBytesWritableReader
 	private long fpEnd;
 	private FSDataInputStream iStream;
 	
+	private long keyCounter;
 	private int blockSize;
 
 	public FixedLengthBytesWritableReader(int blockSize)
 	{
+		this.keyCounter = 0;
 		this.blockSize = blockSize;
 		
 		this.key 	= new LongWritable();
@@ -76,6 +78,8 @@ public class FixedLengthBytesWritableReader
 		
 		if (fpPos < fpEnd)
 		{
+			this.key.set(this.keyCounter++);
+			
 			int readSize;
 			if ((this.fpPos + this.blockSize) <= fpEnd) {
 				// we can read entire buffer size of data.
