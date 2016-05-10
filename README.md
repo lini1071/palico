@@ -5,5 +5,4 @@ Sample projects
 	for Apache Hadoop MapReduce : src/org/ground/palico/hadoop
 
 
-
-Deleted branch __wrapped__. 
+'16.05.10 Modified FixedLengthBytesWritableReader.java
