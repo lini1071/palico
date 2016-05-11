@@ -34,6 +34,6 @@ public class CalculatorMapper extends
 		outputBuffer.asFloatBuffer().put(floatBuffer);
 		result = outputBuffer.array();
 
-		context.write(key, new FixedLengthBytesWritable(result));
+		context.write(key, new FixedLengthBytesWritable(result, value.getLength()));
 	}
 }
